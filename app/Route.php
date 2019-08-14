@@ -20,8 +20,9 @@ class Route
 	private function initRoutes()
 	{	
 		$RouteLogin = require_once(__DIR__ . "/routes/RouteLogin.php");
+		$RouteHome = require_once(__DIR__ . "/routes/RouteHome.php");
 
-		$array_routes = array_merge($RouteLogin);
+		$array_routes = array_merge($RouteLogin, $RouteHome);
 		$this->routes = $array_routes;
 	}
 

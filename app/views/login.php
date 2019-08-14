@@ -4,7 +4,7 @@
             <div class="jumbotron" id="painel-login">
                 <h1 class="display-4">Login</h1>
                 <div class="form-group">
-                    <input type="email" class="form-control" id="usuario" placeholder="Usuário" required>
+                    <input type="email" class="form-control" id="email" placeholder="E-mail" required>
                 </div>
                 <div class="form-group">
                     <input type="password" class="form-control" id="senha" placeholder="Senha" required>
