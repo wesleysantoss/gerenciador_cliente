@@ -1,0 +1,21 @@
+.menu_principal {
+    background: #ecf0f1
+}
+
+.menu_principal > li > a {
+    color: black;
+    margin: 6px
+}
+
+.menu_principal > li > a:hover {
+    background:#bdc3c7;
+}
+
+.menu_principal > li > a.sair {
+    background:#c0392b;
+    color: #ecf0f1
+}
+
+.menu_principal > li > a.sair:hover {
+    background: #e74c3c;
+}

@@ -10,6 +10,8 @@
 
     <link href="<?php echo PATH_URL ?>/assets/css/libs/bootstrap/bootstrap.min.css?v=<?php echo filemtime(PATH . '/assets/css/libs/bootstrap/bootstrap.min.css') ?>" rel="stylesheet">
 
+    <link href="<?php echo PATH_URL ?>/assets/css/global.css?v=<?php echo filemtime(PATH . '/assets/css/global.css') ?>" rel="stylesheet">
+
     <?php
         if(!empty($css)){
             foreach($css as $row){
@@ -23,3 +25,19 @@
     ?>
 </head>
 <body>
+    <?php if(isset($_SESSION['usuario'])){ ?>
+        <ul class="nav justify-content-center menu_principal">
+            <li class="nav-item">
+                <a class="nav-link" href="/gerenciador-cliente/home">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Cadastrar cliente</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Listar clientes</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link sair" href="/gerenciador-cliente/login/sair">Sair</a>
+            </li>
+        </ul>
+    <?php } ?>
