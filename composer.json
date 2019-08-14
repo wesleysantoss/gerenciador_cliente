@@ -1,0 +1,16 @@
+{
+    "name": "wesley/gerenciador-clientes",
+    "description": "Aplicação para o desafio da KaBuM",
+    "authors": [
+        {
+            "name": "Wesley Santos",
+            "email": "wessleysanttos@live.com"
+        }
+    ],
+    "autoload": {
+        "files": ["app/config/Constant.php"],
+        "classmap": ["app/Route.php"],
+        "psr-4": {"App\\": "app/"}
+    },
+    "require": {}
+}
