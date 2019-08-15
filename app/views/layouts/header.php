@@ -31,10 +31,10 @@
                 <a class="nav-link" href="/gerenciador-cliente/home">Home</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">Cadastrar cliente</a>
+                <a class="nav-link" href="/gerenciador-cliente/cliente">Cadastrar cliente</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">Listar clientes</a>
+                <a class="nav-link" href="/gerenciador-cliente/cliente/listar">Listar clientes</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link sair" href="/gerenciador-cliente/login/sair">Sair</a>
