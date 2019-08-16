@@ -43,6 +43,21 @@ class EnderecoCliente {
         }
     }
 
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function getIdCliente()
+    {
+        return $this->idCliente;
+    }
+
+    public function getDataCadastro()
+    {
+        return $this->dataCadastro;
+    } 
+
     /**
      * Cria um novo endereço.
      * @param $idCliente - ID do cliente que pertence o endereço.
@@ -72,21 +87,6 @@ class EnderecoCliente {
         $stmt->bindValue(':endereco_principal', $enderecoPrincipal);
         return $stmt->execute();
     }
-
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function getIdCliente()
-    {
-        return $this->idCliente;
-    }
-
-    public function getDataCadastro()
-    {
-        return $this->dataCadastro;
-    } 
 
     /**
      * Busca todos os endereços de um cliente especifico.

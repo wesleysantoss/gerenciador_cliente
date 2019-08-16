@@ -9,6 +9,7 @@ define('PATH'    , 	'app');
 /**
  * DB
  */
+define("DB_DRIVER"   , "mysql");
 define("DB_HOST"     , "localhost");
 define("DB_DATABASE" , "gerenciador-clientes");
 define("DB_LOGIN"    , "root");

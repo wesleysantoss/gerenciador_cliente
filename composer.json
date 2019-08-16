@@ -8,7 +8,7 @@
         }
     ],
     "autoload": {
-        "files": ["app/config/Constant.php"],
+        "files": ["app/config/env.configs.php"],
         "classmap": ["app/Route.php"],
         "psr-4": {"App\\": "app/"}
     },
