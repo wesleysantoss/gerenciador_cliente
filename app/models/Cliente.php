@@ -82,7 +82,7 @@ class Cliente {
     }
 
     public function atualizar()
-    {
+    { 
         $pdo = ConnectionDB::getConnection();
 
         $stmt = $pdo->prepare("UPDATE clientes SET nome = :nome, cpf = :cpf, rg = :rg, telefone = :telefone, data_nascimento = :data_nascimento WHERE id = :id");

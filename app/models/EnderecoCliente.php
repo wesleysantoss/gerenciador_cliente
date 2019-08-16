@@ -72,7 +72,7 @@ class EnderecoCliente {
     public function getDataCadastro()
     {
         return $this->dataCadastro;
-    }
+    } 
 
     public static function buscarPorCliente($idCliente)
     {
@@ -92,6 +92,22 @@ class EnderecoCliente {
         $stmt->bindValue(':id_cliente', $idCliente);
         $stmt->execute();
         return $stmt->fetch(\PDO::FETCH_ASSOC);
+    }
+
+    public static function editar($id, $rua, $numero, $bairro, $cidade, $estado, $complemento, $enderecoPrincipal)
+    {
+        $pdo = ConnectionDB::getConnection();
+
+        $stmt = $pdo->prepare("UPDATE endereco_cliente SET rua = :rua, numero = :numero, bairro = :bairro, cidade = :cidade, estado = :estado, complemento = :complemento, endereco_principal = :endereco_principal WHERE id = :id");
+        $stmt->bindValue(':rua', $rua);
+        $stmt->bindValue(':numero', $numero);
+        $stmt->bindValue(':bairro', $bairro);
+        $stmt->bindValue(':cidade', $cidade);
+        $stmt->bindValue(':estado', $estado);
+        $stmt->bindValue(':complemento', $complemento);
+        $stmt->bindValue(':endereco_principal', $enderecoPrincipal);
+        $stmt->bindValue(':id', $id);
+        return $stmt->execute();
     }
 
     public static function excluir($id)

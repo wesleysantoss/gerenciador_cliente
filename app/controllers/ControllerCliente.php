@@ -125,4 +125,80 @@ class ControllerCliente extends Controller {
 			));
 		}
 	}
+
+	public function listarEndereco()
+	{
+		$id = $_POST['id'];
+
+		$Cliente = new Cliente($id);
+		$enderecos = $Cliente->buscarTodosEnderecos();
+
+		echo json_encode($enderecos);
+	}
+
+	public function editarEndereco()
+	{
+		$idEndereco = $_POST['idEndereco'];
+		$rua = $_POST['rua'];
+		$numero = $_POST['numero'];
+		$bairro = $_POST['bairro'];
+		$cidade = $_POST['rua'];
+		$uf = $_POST['uf'];
+		$complemento = $_POST['complemento'];
+		$enderecoPrincipal = $_POST['enderecoPrincipal'];
+
+		$resultado = EnderecoCliente::editar($idEndereco, $rua, $numero, $bairro, $cidade, $uf, $complemento, $enderecoPrincipal);
+
+		if($resultado){
+			echo json_encode(array(
+				"status" => "sucesso"
+			));
+		}
+		else{
+			echo json_encode(array(
+				"status" => "algo de errado"
+			));
+		}
+	}
+
+	public function excluirEndereco()
+	{
+		$idEndereco = $_POST['idEndereco'];
+
+		if(EnderecoCliente::excluir($idEndereco)){
+			echo json_encode(array(
+				"status" => "sucesso"
+			));
+		}
+		else{
+			echo json_encode(array(
+				"status" => "algo de errado"
+			));
+		}
+	}
+
+	public function adicionarEndereco()
+	{
+		$idCliente = $_POST['idCliente'];
+		$rua = $_POST['rua'];
+		$numero = $_POST['numero'];
+		$bairro = $_POST['bairro'];
+		$cidade = $_POST['rua'];
+		$uf = $_POST['uf'];
+		$complemento = $_POST['complemento'];
+		$enderecoPrincipal = $_POST['enderecoPrincipal'];
+
+		$resultado = EnderecoCliente::criar($idCliente, $rua, $numero, $bairro, $cidade, $uf, $complemento, $enderecoPrincipal);
+
+		if($resultado){
+			echo json_encode(array(
+				"status" => "sucesso"
+			));
+		}
+		else{
+			echo json_encode(array(
+				"status" => "algo de errado"
+			));
+		}
+	}
 }
