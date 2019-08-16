@@ -48,6 +48,15 @@ class Cliente {
         return $this->dataCadastro;
     }
 
+    /**
+     * Cadastra um novo cliente
+     * @param $nome - Nome
+     * @param $cpf - CPF
+     * @param $rg - RG
+     * @param $telefone - Telefone
+     * @param $dataNascimento - Data de nascimento
+     * @return Bool
+     */
     public static function criar($nome, $cpf, $rg, $telefone, $dataNascimento)
     {
         $pdo = ConnectionDB::getConnection();
@@ -63,6 +72,9 @@ class Cliente {
         return $pdo->lastInsertId();
     }
 
+    /**
+     * Busca todos os clientes que existe
+     */
     public static function buscarTodos()
     {
         $pdo = ConnectionDB::getConnection();
@@ -72,6 +84,11 @@ class Cliente {
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Exclui um cliente especifico
+     * @param $id - ID do cliente a ser excluido
+     * @return Bool
+     */
     public static function excluir($id)
     {
         $pdo = ConnectionDB::getConnection();
@@ -81,6 +98,9 @@ class Cliente {
         return $stmt->execute();
     }
 
+    /**
+     * Atualiza as informações do objeto instanciado.
+     */
     public function atualizar()
     { 
         $pdo = ConnectionDB::getConnection();
@@ -95,6 +115,9 @@ class Cliente {
         return $stmt->execute();
     }
 
+    /**
+     * Busca todos os endereços do objeto instanciado.
+     */
     public function buscarTodosEnderecos()
     {
         return EnderecoCliente::buscarPorCliente($this->id);

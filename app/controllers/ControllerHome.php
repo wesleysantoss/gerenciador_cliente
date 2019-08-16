@@ -6,10 +6,14 @@ class ControllerHome extends Controller {
     public function __construct()
     {
         if(!isset($_SESSION['usuario'])){
+			// Caso o usuário não esteja logado ele é direcionado para a tela de login.
             header('location: /gerenciador-cliente/login');
         }        
     }
 
+	/**
+	 * Renderiza a home.
+	 */
     public function index()
 	{
 		// Array utilizado em layouts/header.php

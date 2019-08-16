@@ -43,12 +43,26 @@ class EnderecoCliente {
         }
     }
 
-    public static function criar($idCliente, $rua, $numero, $bairro, $cidade, $estado, $complemento, $enderecoPrincipal)
+    /**
+     * Cria um novo endereço.
+     * @param $idCliente - ID do cliente que pertence o endereço.
+     * @param $cep - CEP
+     * @param $rua - Rua
+     * @param $numero - Número da residencia
+     * @param $bairro - Bairro
+     * @param $cidade - Cidade
+     * @param $estado - UF
+     * @param $complemento - Complemento
+     * @param $enderecoPrincipal - Sim ou Não
+     * @return Bool.
+     */
+    public static function criar($idCliente, $cep, $rua, $numero, $bairro, $cidade, $estado, $complemento, $enderecoPrincipal)
     {
         $pdo = ConnectionDB::getConnection();
 
-        $stmt = $pdo->prepare("INSERT INTO endereco_cliente (id_cliente, rua, numero, bairro, cidade, estado, complemento, endereco_principal) VALUES (:id_cliente, :rua, :numero, :bairro, :cidade, :estado, :complemento, :endereco_principal)");
+        $stmt = $pdo->prepare("INSERT INTO endereco_cliente (id_cliente, cep, rua, numero, bairro, cidade, estado, complemento, endereco_principal) VALUES (:id_cliente, :cep, :rua, :numero, :bairro, :cidade, :estado, :complemento, :endereco_principal)");
         $stmt->bindValue(':id_cliente', $idCliente);
+        $stmt->bindValue(':cep', $cep);
         $stmt->bindValue(':rua', $rua);
         $stmt->bindValue(':numero', $numero);
         $stmt->bindValue(':bairro', $bairro);
@@ -74,16 +88,25 @@ class EnderecoCliente {
         return $this->dataCadastro;
     } 
 
+    /**
+     * Busca todos os endereços de um cliente especifico.
+     * @param $idCliente - ID do cliente
+     * @return Array
+     */
     public static function buscarPorCliente($idCliente)
     {
         $pdo = ConnectionDB::getConnection();
 
-        $stmt = $pdo->prepare("SELECT id, rua, numero, bairro, cidade, estado, complemento, endereco_principal, data_cadastro FROM endereco_cliente WHERE id_cliente = :id_cliente");
+        $stmt = $pdo->prepare("SELECT id, cep, rua, numero, bairro, cidade, estado, complemento, endereco_principal, data_cadastro FROM endereco_cliente WHERE id_cliente = :id_cliente");
         $stmt->bindValue(':id_cliente', $idCliente);
         $stmt->execute();
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Busca o endereço principal de um cliente especifico
+     * @return Array
+     */
     public static function buscarPorPrincipalCliente($idCliente)
     {
         $pdo = ConnectionDB::getConnection();
@@ -94,11 +117,25 @@ class EnderecoCliente {
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
-    public static function editar($id, $rua, $numero, $bairro, $cidade, $estado, $complemento, $enderecoPrincipal)
+    /**
+     * Edita o endereço de um cliente especifico.
+     * @param $id - ID do registro a ser editado.
+     * @param $cep - CEP
+     * @param $rua - Rua
+     * @param $numero - Número da residencia
+     * @param $bairro - Bairro
+     * @param $cidade - Cidade
+     * @param $estado - UF
+     * @param $complemento - Complemento
+     * @param $enderecoPrincipal - Sim ou Não
+     * @return Bool.
+     */
+    public static function editar($id, $cep, $rua, $numero, $bairro, $cidade, $estado, $complemento, $enderecoPrincipal)
     {
         $pdo = ConnectionDB::getConnection();
 
-        $stmt = $pdo->prepare("UPDATE endereco_cliente SET rua = :rua, numero = :numero, bairro = :bairro, cidade = :cidade, estado = :estado, complemento = :complemento, endereco_principal = :endereco_principal WHERE id = :id");
+        $stmt = $pdo->prepare("UPDATE endereco_cliente SET cep = :cep, rua = :rua, numero = :numero, bairro = :bairro, cidade = :cidade, estado = :estado, complemento = :complemento, endereco_principal = :endereco_principal WHERE id = :id");
+        $stmt->bindValue(':cep', $cep);
         $stmt->bindValue(':rua', $rua);
         $stmt->bindValue(':numero', $numero);
         $stmt->bindValue(':bairro', $bairro);
@@ -110,6 +147,11 @@ class EnderecoCliente {
         return $stmt->execute();
     }
 
+    /**
+     * Exclui um registro especifico.
+     * @param $id - ID do registro a ser excluido.
+     * @return Bool.
+     */
     public static function excluir($id)
     {
         $pdo = ConnectionDB::getConnection();

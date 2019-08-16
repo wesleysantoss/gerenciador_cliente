@@ -5,8 +5,7 @@ window.onload = function(){
 /**
  * Gera uma tabela com os dados do clientes
  */
-const gerarHtmlDados = dados => {
-    const {data} = dados;
+const gerarTabelaHtmlClientes = data => {
     let html = ``;
 
     if(data.length > 0){
@@ -60,121 +59,278 @@ const gerarHtmlDados = dados => {
 }
 
 /**
- * Busca todos os clientes
+ * Gera um HTML com todos os endereços do cliente.
+ */
+const gerarHtmlListaDeEnderecosCliente = data => {
+    let html = ``;
+
+    if(data.length > 0){
+        for(let dados of data){
+            html += `
+            <div id="painel-enderecos" style="background: #ecf0f1 ; padding: 5px ; margin-top: 10px ; border-radius: 5px">
+                <div class="form-row">
+                    <div class="col-12 col-md-12">
+                        <label>CEP</label>
+                        <input type="text" placeholder="Insira o cep" class="form-control" id="painel-lista-cep" maxlength="100" value="${dados.cep}" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="col-12 col-md-6">
+                        <label>Rua</label>
+                        <input type="text" placeholder="Insira a rua" class="form-control" id="painel-lista-rua" maxlength="100" value="${dados.rua}" required>
+                    </div>
+    
+                    <div class="col-12 col-md-6">
+                        <label>Número</label>
+                        <input type="number" placeholder="Insira o número" class="form-control" id="painel-lista-numero" value="${dados.numero}" required>
+                    </div>
+                </div>
+    
+                <div class="form-row">
+                    <div class="col-12 col-md-5">
+                        <label>Bairro</label>
+                        <input type="text" placeholder="Insira o bairro" class="form-control" id="painel-lista-bairro" maxlength="100" value="${dados.bairro}" required>
+                    </div>
+    
+                    <div class="col-12 col-md-5">
+                        <label>* Cidade</label>
+                        <input type="text" placeholder="Insira a idade" class="form-control" id="painel-lista-cidade" maxlength="50" value="${dados.cidade}" required>
+                    </div>
+    
+                    <div class="col-12 col-md-2">
+                        <label>UF</label>
+                        <input type="text" placeholder="Insira o UF" class="form-control" id="painel-lista-uf" maxlength="2" value="${dados.estado}" required>
+                    </div>
+                </div>
+    
+                <div class="form-row">
+                    <div class="col-12 col-md-12">
+                        <label>Complemento</label>
+                        <input type="text" placeholder="Insira o complemento" class="form-control" id="painel-lista-complemento" maxlength="200" value="${dados.complemento}">
+                    </div>
+                </div>
+    
+                <div class="form-row">
+                    <div class="col-12 col-md-12">
+                        <input type="checkbox" id="painel-lista-endereco-principal" ${dados.endereco_principal == 'Sim' ? 'checked' : ''}>
+                        <label>Endereço principal</label>
+                    </div>
+                </div>
+    
+                <div class="form-row">
+                    <div class="col-12 col-md-12">
+                        <button type="button" id="btn-editar-endereco" data-id="${dados.id}" class="btn btn-success btn-sm">Editar</button>
+                        <button type="button" id="btn-excluir-endereco" data-id="${dados.id}" class="btn btn-danger btn-sm">Excluir</button>
+                    </div>
+                </div>
+            </div>
+            `;
+        }
+    }
+    else{
+        html = `Nenhum endereço cadastrado`;
+    }
+
+    return html;
+}
+
+/**
+ * Busca todos os clientes que tem na base de dados
  */
 const buscarDados = async function(){
+    const $listaClientes = document.querySelector('#lista-clientes');
+
+    $listaClientes.innerHTML = 'Buscando dados...';
+
     try {
-        const $listaClientes = document.querySelector('#lista-clientes');
-        const resultado = await axios('/gerenciador-cliente/cliente/listarTodos');
-        const html = gerarHtmlDados(resultado);
+        const {data} = await axios('/gerenciador-cliente/cliente/listarTodos');
+
+        // Gera o html com os dados dos clientes
+        const html = gerarTabelaHtmlClientes(data);
 
         $listaClientes.innerHTML = html;
     } catch(e){
-        alert('Oops, ocorreu algum erro. Tente novamente mais tarde');
+        Swal.fire({
+            type: 'warning',
+            title: 'Oops...',
+            text: 'Ocorreu algum erro.',
+        });
+
+        $listaClientes.innerHTML = '';
     }
 }
 
+/**
+ * Quando é clicado para editar as info de um cliente
+ */
 document.querySelector("#lista-clientes").addEventListener("click", async function(e){
     const $this = e.target;
 
     if($this.id === 'btn-editar'){
         const idCliente = $this.dataset.id;
-        const formData = new FormData();
-        const $painelEditarDados = document.querySelector("#painel-editar-dados");
-
-        formData.append('id', idCliente);
+        const dados = new FormData();
+        
+        dados.append('id', idCliente);
 
         try {
-            const resultado = await axios({
+            const {data} = await axios({
                 method: 'POST',
                 url: '/gerenciador-cliente/cliente/listar',
+                data: dados,
+                responseType: 'json'
+            });
+
+            const $painelEditarDados = document.querySelector("#painel-editar-dados");
+            const $modalEditarCliente = $("#modal-editar-cliente");
+
+            $painelEditarDados.querySelector("#editar-id").value = idCliente;
+            $painelEditarDados.querySelector("#editar-nome").value = data.nome;
+            $painelEditarDados.querySelector("#editar-cpf").value = data.cpf;
+            $painelEditarDados.querySelector("#editar-rg").value = data.rg;
+            $painelEditarDados.querySelector("#editar-telefone").value = data.telefone;
+            $painelEditarDados.querySelector("#editar-data-nascimento").value = data.dataNascimento;
+
+            $modalEditarCliente.modal('show');
+        } catch(e){
+            Swal.fire({
+                type: 'warning',
+                title: 'Oops...',
+                text: 'Ocorreu algum erro.',
+            });
+        }
+    }
+})
+
+/**
+ * Quando é clicado para salvar os dados de um cliente que está sendo editado.
+ */
+document.querySelector("#btn-salvar-editar-dados").addEventListener("click", async function(){
+    const $painelEditarDados = document.querySelector("#painel-editar-dados");
+
+    // Valida se todos os campos do formulario foram preenchidos.
+    const validarFormularioDados = validarFormulario.call($painelEditarDados);
+
+    if(validarFormularioDados){
+        const id = $painelEditarDados.querySelector("#editar-id").value;
+        const nome = $painelEditarDados.querySelector("#editar-nome").value;
+        const cpf = $painelEditarDados.querySelector("#editar-cpf").value;
+        const rg = $painelEditarDados.querySelector("#editar-rg").value;
+        const telefone = $painelEditarDados.querySelector("#editar-telefone").value;
+        const dataNascimento = $painelEditarDados.querySelector("#editar-data-nascimento").value;
+    
+        const formData = new FormData();
+    
+        formData.append('id', id);
+        formData.append('nome', nome);
+        formData.append('cpf', cpf);
+        formData.append('rg', rg);
+        formData.append('telefone', telefone);
+        formData.append('dataNascimento', dataNascimento);
+    
+        try {
+            const {data} = await axios({
+                method: 'post',
+                url: '/gerenciador-cliente/cliente/atualizar',
                 data: formData,
                 responseType: 'json'
             });
     
-            const {data} = resultado;
-            
-            let html = `
-                <input type="hidden" id="editar-id" value="${idCliente}">
+            if(data.status == 'sucesso'){
+                Swal.fire({
+                    type: 'success',
+                    title: 'Sucesso',
+                    text: 'Operação realizada com sucesso, aguarde... estamos atualizando.',
+                });
 
-                <input type="text" id="editar-nome" class="form-control" value="${data.nome}">
-    
-                <input type="text" id="editar-cpf" class="form-control" value="${data.cpf}">
-    
-                <input type="text" id="editar-rg" class="form-control" value="${data.rg}">
-    
-                <input type="text" id="editar-telefone" class="form-control" value="${data.telefone}">
-    
-                <input type="date" id="editar-data-nascimento" class="form-control" value="${data.dataNascimento}">
-            `;
-    
-            $painelEditarDados.innerHTML = html;
-            $("#modal-editar-cliente").modal('show');
+                setTimeout(() => location.reload(), 2100);
+            }
+            else{
+                Swal.fire({
+                    type: 'warning',
+                    title: 'Oops...',
+                    text: data.mensagem,
+                });
+            }
         } catch(e){
-            console.log(e);
+            Swal.fire({
+                type: 'warning',
+                title: 'Oops...',
+                text: 'Ocorreu algum erro',
+            });
         }
-
     }
-})
-
-document.querySelector("#btn-salvar-editar-dados").addEventListener("click", async function(){
-    const $modal = document.querySelector("#modal-editar-cliente");
-    const id = $modal.querySelector("#editar-id").value;
-    const nome = $modal.querySelector("#editar-nome").value;
-    const cpf = $modal.querySelector("#editar-cpf").value;
-    const rg = $modal.querySelector("#editar-rg").value;
-    const telefone = $modal.querySelector("#editar-telefone").value;
-    const dataNascimento = $modal.querySelector("#editar-data-nascimento").value;
-
-    const formData = new FormData();
-
-    formData.append('id', id);
-    formData.append('nome', nome);
-    formData.append('cpf', cpf);
-    formData.append('rg', rg);
-    formData.append('telefone', telefone);
-    formData.append('dataNascimento', dataNascimento);
-
-    try {
-        const resultado = await axios({
-            method: 'post',
-            url: '/gerenciador-cliente/cliente/atualizar',
-            data: formData,
-            responseType: 'json'
+    else{
+        Swal.fire({
+            type: 'warning',
+            title: 'Oops...',
+            text: 'Preencha todos os campos',
         });
-
-        const {data} = resultado;
-        console.log(data);
-    } catch(e){
-        console.log(e);
     }
 })
 
-document.querySelector("#lista-clientes").addEventListener("click", async function(e){
+/**
+ * Quando é clicado para excluir um cliente.
+ */
+document.querySelector("#lista-clientes").addEventListener("click", function(e){
     const $this = e.target;
 
     if($this.id === 'btn-excluir'){
-        const idCliente = $this.dataset.id;
-        const formData = new FormData();
-
-        formData.append('id', idCliente);
+        Swal.fire({
+            title: 'Oops',
+            text: "Deseja realmente excluir um registro?",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sim, excluir',
+            cancelButtonText: 'Não'
+          }).then(async result => {
+            if (result.value) {
+                const idCliente = $this.dataset.id;
+                const formData = new FormData();
         
-        try {
-            const resultado = await axios({
-                method: 'post',
-                url: '/gerenciador-cliente/cliente/excluir',
-                data: formData,
-                responseType: 'json'
-            });
-    
-            const {data} = resultado;
-            console.log(data);
-        } catch(e){
-            console.log(e);
-        }
+                formData.append('id', idCliente);
+                
+                try {
+                    const {data} = await axios({
+                        method: 'post',
+                        url: '/gerenciador-cliente/cliente/excluir',
+                        data: formData,
+                        responseType: 'json'
+                    });
+                    
+                    if(data.status == 'sucesso'){
+                        Swal.fire(
+                            'Deleted!',
+                            'Registro excluído com sucesso, aguarde... estamos atualizando',
+                            'success'
+                        );
+
+                        setTimeout(() => location.reload(), 2100);
+                    }
+                    else{
+                        Swal.fire({
+                            type: 'warning',
+                            title: 'Oops...',
+                            text: data.mensagem,
+                        });
+                    }
+                } catch(e){
+                    Swal.fire({
+                        type: 'warning',
+                        title: 'Oops...',
+                        text: 'Ocorreu algum erro.',
+                    });
+                }
+            }
+        })
     }
 })
 
+/**
+ * Quando é clicado para adicionar um novo endereço.
+ */
 document.querySelector("#lista-clientes").addEventListener("click", function(e){
     const $this = e.target;
 
@@ -182,17 +338,24 @@ document.querySelector("#lista-clientes").addEventListener("click", function(e){
         const idCliente = $this.dataset.id;
         const $modal = $("#modal-adicionar-endereco");
 
+        // Coloca o ID do elemento clicado em um campo hidden.
         document.querySelector('#painel-adicionar-id-cliente').value = idCliente;
         $modal.modal('show');
     }
 })
 
+/**
+ * Quando é clicado para adicionar um novo endereço a um cliente.
+ */
 document.querySelector("#btn-adicionar-endereco").addEventListener("click", async function(){
     const $painelAdicionarEndereco = document.querySelector("#painel-adicionar-endereco");
+
+    // Valida se todos os campos foram preenchidos.
     const validarAdicionarEndereco = validarFormulario.call($painelAdicionarEndereco);
 
     if(validarAdicionarEndereco){
         const idCliente = $painelAdicionarEndereco.querySelector("#painel-adicionar-id-cliente").value;
+        const cep = $painelAdicionarEndereco.querySelector("#painel-adicionar-cep").value;
         const rua = $painelAdicionarEndereco.querySelector("#painel-adicionar-rua").value;
         const numero = $painelAdicionarEndereco.querySelector("#painel-adicionar-numero").value;
         const bairro = $painelAdicionarEndereco.querySelector("#painel-adicionar-bairro").value;
@@ -201,37 +364,62 @@ document.querySelector("#btn-adicionar-endereco").addEventListener("click", asyn
         const complemento = $painelAdicionarEndereco.querySelector("#painel-adicionar-complemento").value;
         const enderecoPrincipal = $painelAdicionarEndereco.querySelector("#painel-adicionar-endereco-principal").checked == true ? 'Sim' : 'Não';
 
-        const formData = new FormData();
+        const dados = new FormData();
 
-        formData.append('idCliente', idCliente);
-        formData.append('rua', rua);
-        formData.append('numero', numero);
-        formData.append('bairro', bairro);
-        formData.append('cidade', cidade);
-        formData.append('uf', uf);
-        formData.append('complemento', complemento);
-        formData.append('enderecoPrincipal', enderecoPrincipal);
+        dados.append('idCliente', idCliente);
+        dados.append('cep', cep);
+        dados.append('rua', rua);
+        dados.append('numero', numero);
+        dados.append('bairro', bairro);
+        dados.append('cidade', cidade);
+        dados.append('uf', uf);
+        dados.append('complemento', complemento);
+        dados.append('enderecoPrincipal', enderecoPrincipal);
 
         try {
-            const resultado = await axios({
+            const {data} = await axios({
                 method: 'post',
                 url: '/gerenciador-cliente/cliente/endereco/adicionar',
-                data: formData,
+                data: dados,
                 responseType: 'json'
             });
 
-            const {data} = resultado;
-            console.log(data);
+            if(data.status == 'sucesso'){
+                Swal.fire({
+                    type: 'success',
+                    title: 'Sucesso',
+                    text: 'Operação realizada com sucesso, aguarde... estamos atualizando',
+                });
 
+                setTimeout(() => location.reload(), 2100);
+            }
+            else{
+                Swal.fire({
+                    type: 'warning',
+                    title: 'Oops...',
+                    text: data.mensagem,
+                });
+            }
         } catch (e){
-            console.log('Error: ', e);
+            Swal.fire({
+                type: 'warning',
+                title: 'Oops...',
+                text: 'Ocorreu algum erro.',
+            });
         }
     }
     else{
-        alert('Oops, preencha todos os campos');
+        Swal.fire({
+            type: 'warning',
+            title: 'Oops...',
+            text: 'Preencha todos os campos',
+        });
     }
 })
 
+/**
+ * Quando é clicado para buscar todos os endereços do cliente.
+ */
 document.querySelector("#lista-clientes").addEventListener("click", async function(e){
     const $this = e.target;
 
@@ -239,94 +427,50 @@ document.querySelector("#lista-clientes").addEventListener("click", async functi
         const $modal = $("#modal-listar-endereco");
         const $painelEndereco = document.querySelector("#painel-listar-endereco");
         const idCliente = $this.dataset.id;
-        const formData = new FormData();
+        const dados = new FormData();
 
-        formData.append('id', idCliente);
+        dados.append('id', idCliente);
         
         try {
-            const resultado = await axios({
+            const {data} = await axios({
                 method: 'post',
                 url: '/gerenciador-cliente/cliente/endereco/listar',
-                data: formData,
+                data: dados,
                 responseType: 'json'
             });
     
-            const {data} = resultado;
-            let html = ``;
-
-            for(let dados of data){
-                html += `
-                <div id="painel-enderecos" style="background: #ecf0f1 ; padding: 5px ; margin-top: 10px ; border-radius: 5px">
-                    <div class="form-row">
-                        <div class="col-12 col-md-6">
-                            <label>Rua</label>
-                            <input type="text" placeholder="Insira a rua" class="form-control" id="painel-lista-rua" maxlength="100" value="${dados.rua}" required>
-                        </div>
-        
-                        <div class="col-12 col-md-6">
-                            <label>Número</label>
-                            <input type="number" placeholder="Insira o número" class="form-control" id="painel-lista-numero" value="${dados.numero}" required>
-                        </div>
-                    </div>
-        
-                    <div class="form-row">
-                        <div class="col-12 col-md-5">
-                            <label>Bairro</label>
-                            <input type="text" placeholder="Insira o bairro" class="form-control" id="painel-lista-bairro" maxlength="100" value="${dados.bairro}" required>
-                        </div>
-        
-                        <div class="col-12 col-md-5">
-                            <label>* Cidade</label>
-                            <input type="text" placeholder="Insira a idade" class="form-control" id="painel-lista-cidade" maxlength="50" value="${dados.cidade}" required>
-                        </div>
-        
-                        <div class="col-12 col-md-2">
-                            <label>UF</label>
-                            <input type="text" placeholder="Insira o UF" class="form-control" id="painel-lista-uf" maxlength="2" value="${dados.estado}" required>
-                        </div>
-                    </div>
-        
-                    <div class="form-row">
-                        <div class="col-12 col-md-12">
-                            <label>Complemento</label>
-                            <input type="text" placeholder="Insira o complemento" class="form-control" id="painel-lista-complemento" maxlength="200" value="${dados.complemento}">
-                        </div>
-                    </div>
-        
-                    <div class="form-row">
-                        <div class="col-12 col-md-12">
-                            <input type="checkbox" id="painel-lista-endereco-principal" ${dados.endereco_principal == 'Sim' ? 'checked' : ''}>
-                            <label>Endereço principal</label>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="col-12 col-md-12">
-                            <button type="button" id="btn-editar-endereco" data-id="${dados.id}" class="btn btn-success btn-sm">Editar</button>
-                            <button type="button" id="btn-excluir-endereco" data-id="${dados.id}" class="btn btn-danger btn-sm">Excluir</button>
-                        </div>
-                    </div>
-                </div>
-                `;
-            }
+            const html = gerarHtmlListaDeEnderecosCliente(data);
 
             $painelEndereco.innerHTML = html;
             $modal.modal('show');
         } catch(e){
-            console.log(e);
+            Swal.fire({
+                type: 'warning',
+                title: 'Oops...',
+                text: 'Ocorreu algum erro.',
+            });
         }
     }
 })
 
+/**
+ * Eventos que ocorrem dentro do modal com todos os endereços do cliente.
+ * Usuário pode editar um endereço especifico ou excluir.
+ */
 document.querySelector("#modal-listar-endereco").addEventListener("click", async function(e){
     const $this = e.target;
 
     if($this.id === 'btn-editar-endereco'){
+        // Usuário clicou no botão de editar endereço.
+
         const idEndereco = $this.dataset.id;
         const $painelEditarDados = $this.parentNode.parentNode.parentNode;
+
+        // Valida se todos os campos foram preenchidos.
         const validarFormularioEditarDados = validarFormulario.call($painelEditarDados);
 
         if(validarFormularioEditarDados){
+            const cep = $painelEditarDados.querySelector("#painel-lista-cep").value;
             const rua = $painelEditarDados.querySelector("#painel-lista-rua").value;
             const numero = $painelEditarDados.querySelector("#painel-lista-numero").value;
             const bairro = $painelEditarDados.querySelector("#painel-lista-bairro").value;
@@ -335,29 +479,47 @@ document.querySelector("#modal-listar-endereco").addEventListener("click", async
             const complemento = $painelEditarDados.querySelector("#painel-lista-complemento").value;
             const enderecoPrincipal = $painelEditarDados.querySelector("#painel-lista-endereco-principal").checked == true ? 'Sim' : 'Não';
 
-            const formData = new FormData();
+            const dados = new FormData();
 
-            formData.append('idEndereco', idEndereco);
-            formData.append('rua', rua);
-            formData.append('numero', numero);
-            formData.append('bairro', bairro);
-            formData.append('cidade', cidade);
-            formData.append('uf', uf);
-            formData.append('complemento', complemento);
-            formData.append('enderecoPrincipal', enderecoPrincipal);
+            dados.append('idEndereco', idEndereco);
+            dados.append('cep', cep);
+            dados.append('rua', rua);
+            dados.append('numero', numero);
+            dados.append('bairro', bairro);
+            dados.append('cidade', cidade);
+            dados.append('uf', uf);
+            dados.append('complemento', complemento);
+            dados.append('enderecoPrincipal', enderecoPrincipal);
 
             try {
-                const resultado = await axios({
+                const {data} = await axios({
                     method: 'post',
                     url: '/gerenciador-cliente/cliente/endereco/editar',
-                    data: formData,
+                    data: dados,
                     responseType: 'json'
                 });
-    
-                const {data} = resultado;
-                console.log(data);
+
+                if(data.status == 'sucesso'){
+                    Swal.fire({
+                        type: 'success',
+                        title: 'Sucesso',
+                        text: 'Operação realizada com sucesso',
+                    });
+                }
+                else{
+                    Swal.fire({
+                        type: 'warning',
+                        title: 'Oops...',
+                        text: data.mensagem,
+                    });
+                }
             } catch (e){
-                console.log('ERROR', e);
+                console.log('Error: ', e);
+                Swal.fire({
+                    type: 'warning',
+                    title: 'Oops...',
+                    text: 'Ocorreu algum erro',
+                });
             }
         }
         else{
@@ -365,25 +527,56 @@ document.querySelector("#modal-listar-endereco").addEventListener("click", async
         }
     }
     else if($this.id === 'btn-excluir-endereco'){
-        const idEndereco = $this.dataset.id;
-        const formData = new FormData();
+        // Usuário clicou na opção de excluir o endereço do cliente.
+        Swal.fire({
+            title: 'Oops...',
+            text: "Deseja realmente excluir o endereço?",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sim, excluir',
+            cancelButtonText: 'Não'
+        }).then(async result => {
+            if (result.value) {
+                const idEndereco = $this.dataset.id;
+                const $painelEditarDados = $this.parentNode.parentNode.parentNode;
+                const dados = new FormData();
+        
+                dados.append('idEndereco', idEndereco);
+        
+                try {
+                    const {data} = await axios({
+                        method: 'post',
+                        url: '/gerenciador-cliente/cliente/endereco/excluir',
+                        data: dados,
+                        responseType: 'json'
+                    });
 
-        formData.append('idEndereco', idEndereco);
+                    if(data.status == 'sucesso'){
+                        Swal.fire(
+                            'Excluído',
+                            'Endereço excluído com sucesso',
+                            'success'
+                        );
 
-        try {
-            const resultado = await axios({
-                method: 'post',
-                url: '/gerenciador-cliente/cliente/endereco/excluir',
-                data: formData,
-                responseType: 'json'
-            });
-
-            const {data} = resultado;
-            console.log(data);
-        } catch (e){
-            console.log('ERROR: ', e);
-        }
+                        $painelEditarDados.remove();
+                    }
+                    else{
+                        Swal.fire({
+                            type: 'warning',
+                            title: 'Oops...',
+                            text: data.mensagem,
+                        });
+                    }
+                } catch (e){
+                    Swal.fire({
+                        type: 'warning',
+                        title: 'Oops...',
+                        text: 'Ocorreu algum erro',
+                    });
+                }
+            }
+        });
     }
-
-
 })

@@ -1,20 +1,24 @@
 document.querySelector("#btn-entrar").addEventListener("click", async function(){
+    // Desabilita o botão para o usuário não clicar novamente.
+    this.innerText = 'Aguarde...';
+    this.setAttribute('disabled', 'disabled');
+
+    // Valida se os campos require do form estão preenchido.
     const resultadoValidacao = validarFormulario.call(document.querySelector("#painel-login"));
 
     if(resultadoValidacao){
         const email = document.querySelector("#email").value;
         const senha = document.querySelector("#senha").value;
+        const dados = new FormData();
 
-        const formData = new FormData();
-
-        formData.append('email', email);
-        formData.append('senha', senha);
+        dados.append('email', email);
+        dados.append('senha', senha);
 
         try {
             const resultado = await axios({
                 method: 'POST',
                 url: '/gerenciador-cliente/login/autenticar',
-                data: formData,
+                data: dados,
                 responseType: 'json'
             });
     
@@ -24,20 +28,39 @@ document.querySelector("#btn-entrar").addEventListener("click", async function()
                 window.location = "/gerenciador-cliente/home";
             }
             else{
-                alert('Oops, e-mail ou senha incorretos');
+                Swal.fire({
+                    type: 'warning',
+                    title: 'Oops...',
+                    text: data.mensagem,
+                });
             }
         } catch (e){
-            alert('Oops, ocorreu algum erro. Tente novamente mais tarde');
+            console.log('Error: ', e);
+            Swal.fire({
+                type: 'error',
+                title: 'Oops...',
+                text: 'Ocorreu algum erro. Tente novamente mais tarde',
+            });
         }
     }
     else{
-        alert(`Preencha todos os campos`);
+        Swal.fire({
+            type: 'error',
+            title: 'Oops...',
+            text: 'Preencha todos os campos',
+        });
     }
+
+    // Habilita o botão novamente.
+    this.innerText = 'Entrar';
+    this.removeAttribute('disabled');
 })
 
+/**
+ * Sempre que o usuário apertar ENTER no form de login já tentar autenticar.
+ */
 document.querySelector("#painel-login").addEventListener("keydown", function(e){
     const $this = e.target;
-
     if(e.keyCode === 13 && $this.nodeName === 'INPUT'){
         document.querySelector("#btn-entrar").click();
     }

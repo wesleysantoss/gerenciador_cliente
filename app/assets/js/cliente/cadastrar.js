@@ -1,8 +1,10 @@
 /**
- * Gera um HTML com as informações do endereço a partir da div #painel-novo-endereco
- * A função deve ser chamada pelo metodo call
+ * Gera um HTML com as informações do endereço
+ * A função deve ser chamada pelo metodo call, passando por parametro um elemento do dom que contenha os
+ * inputs para gerar um novo endereço
  */
 const gerarHtmlPainelEndereco = function(){
+    const cep = this.querySelector("#cep").value;
     const rua = this.querySelector("#rua").value;
     const numero = this.querySelector("#numero").value;
     const bairro = this.querySelector("#bairro").value;
@@ -14,6 +16,10 @@ const gerarHtmlPainelEndereco = function(){
     const html = `
         <div class="card mt-2" id="dados-endereco">
             <div class="card-body">
+                <p>
+                    <b>CEP:</b> <span data-elemento="cep">${cep}</span> 
+                </p>
+
                 <p>
                     <b>Rua:</b> <span data-elemento="rua">${rua}</span> 
                     <b>Número:</b> <span data-elemento="numero">${numero}</span>
@@ -47,18 +53,54 @@ const gerarHtmlPainelEndereco = function(){
 document.querySelector("#btn-novo-endereco").addEventListener("click", function(){
     const $painelNovoEndereco = document.querySelector("#painel-novo-endereco");
     const $modalEndereco = $("#modal-endereco");
+
+    // Valida se todos os campos foram preenchidos.
     const resultadoValidarForm = validarFormulario.call($painelNovoEndereco);
 
     if(resultadoValidarForm){
         const $painelEndereco = document.querySelector("#painel-endereco");
+
+        // Gera um HTML a partir da div#painel-endereco
         const html = gerarHtmlPainelEndereco.call($painelNovoEndereco);
 
+        // Insere o novo endereço no fim da div#painel-endereco
         $painelEndereco.insertAdjacentHTML('beforeend', html);
+
+        // Limpa o formulario de novos endereços.
         limparFormulario.call($painelNovoEndereco);
+
+        // Fecha o modal.
         $modalEndereco.modal('hide');
     }
     else{
-        alert('Preencha todos os campos relacionado a endereço');
+        Swal.fire({
+            type: 'warning',
+            title: 'Oops...',
+            text: 'Preencha todos os campos',
+        });
+    }
+})
+
+/**
+ * Sempre que o foco sair do CEP
+ */
+document.querySelector("#cep").addEventListener("change", async function(){
+    // Consome a API do via cep para completar o endereço.
+    const cep = this.value;
+
+    try {
+        const resultado = await buscarEnderecoPorCep(cep);
+        if(resultado !== false){
+            const {bairro, localidade, logradouro, uf} = resultado;
+            const $painelNovoEndereco = document.querySelector("#painel-novo-endereco");
+            
+            $painelNovoEndereco.querySelector("#bairro").value = bairro;
+            $painelNovoEndereco.querySelector("#cidade").value = localidade;
+            $painelNovoEndereco.querySelector("#rua").value = logradouro;
+            $painelNovoEndereco.querySelector("#uf").value = uf;
+        }
+    } catch (e){
+        console.log('Error: ', e);
     }
 })
 
@@ -79,18 +121,26 @@ document.querySelector("#painel-endereco").addEventListener("click", function(e)
 document.querySelector("#btn-cadastrar").addEventListener("click", async function(){
     const $painelEndereco = document.querySelector("#painel-endereco");
     const $painelDadosCliente = document.querySelector("#painel-dados-cliente");
+
+    // Consulta o total de endereço que foi cadastrado.
     const totalEndereco = $painelEndereco.children.length;
 
+    // Valida se todos os campos do formulario foi preenchido.
     const validarFormularioDadosCliente = validarFormulario.call($painelDadosCliente);
 
     if(validarFormularioDadosCliente){
         if(totalEndereco === 0){
-            alert('Oops, é necessário preencher um endereço');
+            Swal.fire({
+                type: 'warning',
+                title: 'Oops...',
+                text: 'Preencha ao menos um endereço',
+            });
+
             $("#modal-endereco").modal('show');
         }
         else{
             // Captura os dados para o form.
-            const formData = new FormData();
+            const dados = new FormData();
             const nome = $painelDadosCliente.querySelector("#nome").value;
             const cpf = $painelDadosCliente.querySelector("#cpf").value;
             const rg = $painelDadosCliente.querySelector("#rg").value;
@@ -98,15 +148,16 @@ document.querySelector("#btn-cadastrar").addEventListener("click", async functio
             const dataNascimento = $painelDadosCliente.querySelector("#data-nascimento").value;
             const $dadosEndereco = $painelEndereco.querySelectorAll("#dados-endereco");
 
-            // let arrEnderecos = [];
-
-            formData.append('nome', nome);
-            formData.append('cpf', cpf);
-            formData.append('rg', rg);
-            formData.append('telefone', telefone);
-            formData.append('dataNascimento', dataNascimento);
+            dados.append('nome', nome);
+            dados.append('cpf', cpf);
+            dados.append('rg', rg);
+            dados.append('telefone', telefone);
+            dados.append('dataNascimento', dataNascimento);
 
             $dadosEndereco.forEach(elem => {
+                // Percorre por todos elemento de endereço do dom e captura as info.
+
+                const cep = elem.querySelector("span[data-elemento=cep]").innerHTML;
                 const rua = elem.querySelector("span[data-elemento=rua]").innerHTML;
                 const numero = elem.querySelector("span[data-elemento=numero]").innerHTML;
                 const bairro = elem.querySelector("span[data-elemento=bairro]").innerHTML;
@@ -115,37 +166,50 @@ document.querySelector("#btn-cadastrar").addEventListener("click", async functio
                 const complemento = elem.querySelector("span[data-elemento=complemento]").innerHTML;
                 const principal = elem.querySelector("span[data-elemento=principal]").innerHTML;
 
-                formData.append('rua[]', rua);
-                formData.append('numero[]', numero);
-                formData.append('bairro[]', bairro);
-                formData.append('cidade[]', cidade);
-                formData.append('uf[]', uf);
-                formData.append('complemento[]', complemento);
-                formData.append('principal[]', principal);
-                
-                // arrEnderecos.push({rua, numero, bairro, cidade, uf, complemento, principal});
+                dados.append('cep[]', cep);
+                dados.append('rua[]', rua);
+                dados.append('numero[]', numero);
+                dados.append('bairro[]', bairro);
+                dados.append('cidade[]', cidade);
+                dados.append('uf[]', uf);
+                dados.append('complemento[]', complemento);
+                dados.append('principal[]', principal);
             });
 
-            // formData.append('arrEnderecos', arrEnderecos);
-
             try {
-                const resultado = await axios({
+                const {data} = await axios({
                     method: 'POST',
                     url: '/gerenciador-cliente/cliente/cadastrar',
-                    data: formData,
+                    data: dados,
                     responseType: 'json'
                 });
-    
-                const {data} = resultado;
-    
-                console.log(data);
+        
+                if(data.status == 'sucesso'){
+                    Swal.fire({
+                        type: 'success',
+                        title: 'Sucesso',
+                        text: 'Cadastro realizado com sucesso.',
+                    });
+
+                    setTimeout(() => location.reload(), 1500);
+                }
+                else{
+                    Swal.fire({
+                        type: 'danger',
+                        title: 'Oops...',
+                        text: 'Ocorreu algum erro, tente novamente mais tarde.',
+                    });
+                }
             } catch(e) {
                 console.log("Error: ", e);
             }
-
         }
     }
     else{
-        alert('Oops, preencha todos os campos');
+        Swal.fire({
+            type: 'warning',
+            title: 'Oops...',
+            text: 'Preencha todos os campos',
+        });
     }
 })

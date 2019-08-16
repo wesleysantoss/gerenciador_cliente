@@ -16,12 +16,23 @@ class Usuario
         $stmt->bindValue(':email', $email);
         $stmt->execute();
 
-        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+        if($stmt->rowCount() > 0){
+            $row = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-        $this->nome = $row['nome'];
-        $this->email = $row['email'];
+            $this->nome = $row['nome'];
+            $this->email = $row['email'];
+        }
+        else{
+            throw new \Exception("Nenhum usuário com o e-mail {$email}");
+        }
     }
 
+    /**
+     * Valida se o usuário existe.
+     * @param $email - E-mail do usuário.
+     * @param $senha - Senha do usuário.
+     * @return Bool.
+     */
     public static function autenticar($email, $senha)
     {
         $pdo = ConnectionDB::getConnection();

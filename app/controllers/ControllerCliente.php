@@ -8,17 +8,21 @@ class ControllerCliente extends Controller {
     public function __construct()
     {
         if(!isset($_SESSION['usuario'])){
+			// Caso o usuário não esteja logado ele é direcionado para a tela de login.
             header('location: /gerenciador-cliente/login');
         }        
     }
 
+	/**
+	 * Renderiza a tala de cadastrar novos clientes.
+	 */
     public function index()
 	{
 		// Array utilizado em layouts/header.php
 		$array_css = [];    
 		
 		// Array utilizado em layouts/footer.php
-		$array_js = ['libs/axios/axios.min.js', 'utils.js', 'cliente/cadastrar.js'];  
+		$array_js = ['libs/sweetalert/sweetalert.js', 'libs/axios/axios.min.js', 'utils.js', 'cliente/cadastrar.js'];  
 		
 		// Titulo utilizado em layouts/header.php
 		$title = 'Controle de clientes - Cadastrar'; 
@@ -34,8 +38,7 @@ class ControllerCliente extends Controller {
 		$array_css = [];    
 		
 		// Array utilizado em layouts/footer.php
-		$array_js = ['libs/axios/axios.min.js', 'utils.js', 'cliente/listar.js'];  
-		
+		$array_js = ['libs/sweetalert/sweetalert.js', 'libs/axios/axios.min.js', 'utils.js', 'cliente/listar.js'];  
 		// Titulo utilizado em layouts/header.php
 		$title = 'Controle de clientes - Listar'; 
 
@@ -44,6 +47,9 @@ class ControllerCliente extends Controller {
 		$this->view("cliente/listar", $title);
 	}
 
+	/**
+	 * Cadastra um novo cliente
+	 */
 	public function cadastrar()
 	{
 		$nome = $_POST['nome'];
@@ -53,10 +59,11 @@ class ControllerCliente extends Controller {
 		$dataNascimento = $_POST['dataNascimento'];
 
 		$idCliente = Cliente::criar($nome, $cpf, $rg, $telefone, $dataNascimento);
-
+ 
 		$totalEndereco = count($_POST['rua']);
 
 		for($i = 0; $i <= $totalEndereco - 1; $i++){
+			$cep = $_POST['cep'][$i];
 			$rua = $_POST['rua'][$i];
 			$numero = $_POST['numero'][$i];
 			$bairro = $_POST['bairro'][$i];
@@ -65,20 +72,27 @@ class ControllerCliente extends Controller {
 			$complemento = $_POST['complemento'][$i];
 			$enderecoPrincipal = $_POST['principal'][$i];
 
-			EnderecoCliente::criar($idCliente, $rua, $numero, $bairro, $cidade, $uf, $complemento, $enderecoPrincipal);
+			EnderecoCliente::criar($idCliente, $cep, $rua, $numero, $bairro, $cidade, $uf, $complemento, $enderecoPrincipal);
 		}
 
 		echo json_encode(array(
-			"status" => "sucesso"
+			"status" => "sucesso",
+			"mensagem" => "Cadastro realizado com sucesso"
 		));
 	}
 
+	/**
+	 * Busca todos os clientes que existe na base
+	 */
 	public function listarTodos()
 	{
 		$clientes = Cliente::buscarTodos();
 		echo json_encode($clientes);
 	}
 
+	/**
+	 * Lista um cliente especifico
+	 */
 	public function listar()
 	{
 		$id = $_POST['id'];
@@ -86,6 +100,9 @@ class ControllerCliente extends Controller {
 		echo json_encode($Cliente);
 	}
 
+	/**
+	 * Atualiza as informa as informações de um cliente.
+	 */
 	public function atualizar()
 	{
 		$id = $_POST['id'];
@@ -110,6 +127,9 @@ class ControllerCliente extends Controller {
 		}
 	}
 
+	/**
+	 * Exclui um cliente especifico.
+	 */
 	public function excluir()
 	{
 		$id = $_POST['id'];
@@ -126,6 +146,9 @@ class ControllerCliente extends Controller {
 		}
 	}
 
+	/**
+	 * Busca todos os endereços de um cliente especifico.
+	 */
 	public function listarEndereco()
 	{
 		$id = $_POST['id'];
@@ -136,18 +159,22 @@ class ControllerCliente extends Controller {
 		echo json_encode($enderecos);
 	}
 
+	/**
+	 * Edita as informações de um endereço especifico.
+	 */
 	public function editarEndereco()
 	{
 		$idEndereco = $_POST['idEndereco'];
+		$cep = $_POST['cep'];
 		$rua = $_POST['rua'];
 		$numero = $_POST['numero'];
 		$bairro = $_POST['bairro'];
-		$cidade = $_POST['rua'];
+		$cidade = $_POST['cidade'];
 		$uf = $_POST['uf'];
 		$complemento = $_POST['complemento'];
 		$enderecoPrincipal = $_POST['enderecoPrincipal'];
 
-		$resultado = EnderecoCliente::editar($idEndereco, $rua, $numero, $bairro, $cidade, $uf, $complemento, $enderecoPrincipal);
+		$resultado = EnderecoCliente::editar($idEndereco, $cep, $rua, $numero, $bairro, $cidade, $uf, $complemento, $enderecoPrincipal);
 
 		if($resultado){
 			echo json_encode(array(
@@ -156,11 +183,15 @@ class ControllerCliente extends Controller {
 		}
 		else{
 			echo json_encode(array(
-				"status" => "algo de errado"
+				"status" => "erro",
+				"mensagem" => "Ocorreu algum erro"
 			));
 		}
 	}
 
+	/**
+	 * Exclui um endereço especifico.
+	 */
 	public function excluirEndereco()
 	{
 		$idEndereco = $_POST['idEndereco'];
@@ -177,18 +208,22 @@ class ControllerCliente extends Controller {
 		}
 	}
 
+	/**
+	 * Adiciona um novo endereço para um cliente especifico.
+	 */
 	public function adicionarEndereco()
 	{
 		$idCliente = $_POST['idCliente'];
+		$cep = $_POST['cep'];
 		$rua = $_POST['rua'];
 		$numero = $_POST['numero'];
 		$bairro = $_POST['bairro'];
-		$cidade = $_POST['rua'];
+		$cidade = $_POST['cidade'];
 		$uf = $_POST['uf'];
 		$complemento = $_POST['complemento'];
 		$enderecoPrincipal = $_POST['enderecoPrincipal'];
 
-		$resultado = EnderecoCliente::criar($idCliente, $rua, $numero, $bairro, $cidade, $uf, $complemento, $enderecoPrincipal);
+		$resultado = EnderecoCliente::criar($idCliente, $cep, $rua, $numero, $bairro, $cidade, $uf, $complemento, $enderecoPrincipal);
 
 		if($resultado){
 			echo json_encode(array(

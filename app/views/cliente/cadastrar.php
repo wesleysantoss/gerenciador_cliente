@@ -65,7 +65,14 @@
         </button>
       </div>
       <div class="modal-body">
-        <div id="painel-novo-endereco">
+        <div id="painel-novo-endereco"> 
+            <div class="form-row">
+                <div class="col-12 col-md-12">
+                    <label>* CEP</label>
+                    <input type="number" placeholder="Insira o CEP" class="form-control" id="cep" maxlength="10" required>
+                </div>
+            </div>
+
             <div class="form-row">
                 <div class="col-12 col-md-6">
                     <label>* Rua</label>
