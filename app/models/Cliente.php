@@ -13,8 +13,7 @@ class Cliente {
     public $rg;
     public $telefone;
     public $dataNascimento;
-    public $enderecoPrincipal;
-    
+
     public function __construct($id)
     {
         $pdo = ConnectionDB::getConnection();
@@ -27,14 +26,12 @@ class Cliente {
             $row = $stmt->fetch(\PDO::FETCH_ASSOC);
 
             $this->id = $id;
-            $this->nome = $row['id'];
+            $this->nome = $row['nome'];
             $this->cpf = $row['cpf'];
             $this->rg = $row['rg'];
             $this->telefone = $row['telefone'];
             $this->dataNascimento = $row['data_nascimento'];
             $this->dataCadastro = $row['data_cadastro'];
-
-            $this->enderecoPrincipal = EnderecoCliente::buscarPorPrincipalCliente($id);
         }
         else{
             throw new Exception("Nenhum cliente com o id {$id}");
@@ -88,12 +85,13 @@ class Cliente {
     {
         $pdo = ConnectionDB::getConnection();
 
-        $stmt = $pdo->prepare("UPDATE clientes SET nome = :nome, cpf = :cpf, rg = :rg, telefone = :telefone, data_nascimento = :data_nascimento");
+        $stmt = $pdo->prepare("UPDATE clientes SET nome = :nome, cpf = :cpf, rg = :rg, telefone = :telefone, data_nascimento = :data_nascimento WHERE id = :id");
         $stmt->bindValue(':nome', $this->nome);
         $stmt->bindValue(':cpf', $this->cpf);
         $stmt->bindValue(':rg', $this->rg);
         $stmt->bindValue(':telefone', $this->telefone);
-        $stmt->bindValue(':data_nascimento', $this->data_nascimento);
+        $stmt->bindValue(':data_nascimento', $this->dataNascimento);
+        $stmt->bindValue(':id', $this->id);
         return $stmt->execute();
     }
 

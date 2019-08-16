@@ -28,13 +28,13 @@ class ControllerCliente extends Controller {
 		$this->view("cliente/cadastrar", $title);
     }
     
-    public function listar()
+    public function pageListar()
 	{
 		// Array utilizado em layouts/header.php
 		$array_css = [];    
 		
 		// Array utilizado em layouts/footer.php
-		$array_js = [];  
+		$array_js = ['libs/axios/axios.min.js', 'utils.js', 'cliente/listar.js'];  
 		
 		// Titulo utilizado em layouts/header.php
 		$title = 'Controle de clientes - Listar'; 
@@ -71,5 +71,58 @@ class ControllerCliente extends Controller {
 		echo json_encode(array(
 			"status" => "sucesso"
 		));
+	}
+
+	public function listarTodos()
+	{
+		$clientes = Cliente::buscarTodos();
+		echo json_encode($clientes);
+	}
+
+	public function listar()
+	{
+		$id = $_POST['id'];
+		$Cliente = new Cliente($id);
+		echo json_encode($Cliente);
+	}
+
+	public function atualizar()
+	{
+		$id = $_POST['id'];
+
+		$Cliente = new Cliente($id);
+
+		$Cliente->nome = $_POST['nome'];
+		$Cliente->cpf = $_POST['cpf'];
+		$Cliente->rg = $_POST['rg'];
+		$Cliente->telefone = $_POST['telefone'];
+		$Cliente->data_nascimento = $_POST['dataNascimento'];
+
+		if($Cliente->atualizar()){
+			echo json_encode(array(
+				"status" => "sucesso"
+			));
+		}
+		else{
+			echo json_encode(array(
+				"status" => "algo de errado"
+			));
+		}
+	}
+
+	public function excluir()
+	{
+		$id = $_POST['id'];
+
+		if(Cliente::excluir($id)){
+			echo json_encode(array(
+				"status" => "sucesso"
+			));
+		}
+		else{
+			echo json_encode(array(
+				"status" => "algo de errado"
+			));
+		}
 	}
 }
