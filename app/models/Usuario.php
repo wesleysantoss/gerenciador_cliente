@@ -5,7 +5,7 @@ use App\config\ConnectionDB;
 
 class Usuario 
 {
-    public $nome;
+    public $nome; 
     public $email;
 
     public function __construct($email)

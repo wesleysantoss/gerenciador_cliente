@@ -1,4 +1,9 @@
-<script type="text/javascript" src="<?php echo PATH_URL ?>/assets/js/libs/bootstrap/bootstrap.min.js?v=<?php echo filemtime(PATH . '/assets/js/Bootstrap/bootstrap.min.js') ?>"></script>
+
+<script type="text/javascript" src="<?php echo PATH_URL ?>/assets/js/libs/bootstrap/jquery-3.2.1.slim.min.js?v=<?php echo filemtime(PATH . '/assets/js/libs/bootstrap/jquery-3.2.1.slim.min.js') ?>"></script>
+
+<script type="text/javascript" src="<?php echo PATH_URL ?>/assets/js/libs/bootstrap/popper.min.js?v=<?php echo filemtime(PATH . '/assets/js/libs/bootstrap/popper.min.js') ?>"></script>
+
+<script type="text/javascript" src="<?php echo PATH_URL ?>/assets/js/libs/bootstrap/bootstrap.min.js?v=<?php echo filemtime(PATH . '/assets/js/libs/bootstrap/bootstrap.min.js') ?>"></script>
 
 <?php
 	if(!empty($js)){
