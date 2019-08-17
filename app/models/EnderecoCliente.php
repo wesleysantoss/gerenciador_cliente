@@ -72,7 +72,7 @@ class EnderecoCliente {
      * @return Bool.
      */
     public static function criar($idCliente, $cep, $rua, $numero, $bairro, $cidade, $estado, $complemento, $enderecoPrincipal)
-    {
+    { 
         $pdo = ConnectionDB::getConnection();
 
         $stmt = $pdo->prepare("INSERT INTO endereco_cliente (id_cliente, cep, rua, numero, bairro, cidade, estado, complemento, endereco_principal) VALUES (:id_cliente, :cep, :rua, :numero, :bairro, :cidade, :estado, :complemento, :endereco_principal)");

@@ -38,7 +38,7 @@ const gerarHtmlPainelEndereco = function(){
                 </p>
 
                 <button id="btn-excluir-endereco" type="button" class="btn btn-danger btn-sm">
-                    Excluir
+                    <i class="fas fa-trash"></i>
                 </button>
             </div>
         </div>
@@ -46,6 +46,10 @@ const gerarHtmlPainelEndereco = function(){
 
     return html;
 }
+
+document.querySelector("#cpf").onkeypress = validarNumero;
+document.querySelector("#rg").onkeypress = validarNumero;
+document.querySelector("#telefone").onkeypress = validarNumero;
 
 /**
  * Sempre que é clicado para gravar um novo endereço.
@@ -111,7 +115,20 @@ document.querySelector("#painel-endereco").addEventListener("click", function(e)
     const $this = e.target;
 
     if($this.id === 'btn-excluir-endereco'){
-        $this.parentNode.parentNode.remove();
+        Swal.fire({
+            title: 'Oops',
+            text: "Deseja realmente excluir o endereço?",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sim, excluir',
+            cancelButtonText: 'Não',
+        }).then((result) => {
+            if (result.value) {
+                $this.parentNode.parentNode.remove();
+            }
+        })
     }
 })
 
@@ -188,10 +205,10 @@ document.querySelector("#btn-cadastrar").addEventListener("click", async functio
                     Swal.fire({
                         type: 'success',
                         title: 'Sucesso',
-                        text: 'Cadastro realizado com sucesso.',
+                        text: 'Cadastro realizado com sucesso, aguarde... estamos atualizando.',
                     });
 
-                    setTimeout(() => location.reload(), 1500);
+                    setTimeout(() => location.reload(), 2500);
                 }
                 else{
                     Swal.fire({
@@ -201,7 +218,11 @@ document.querySelector("#btn-cadastrar").addEventListener("click", async functio
                     });
                 }
             } catch(e) {
-                console.log("Error: ", e);
+                Swal.fire({
+                    type: 'danger',
+                    title: 'Oops...',
+                    text: 'Ocorreu algum erro, tente novamente mais tarde.',
+                });
             }
         }
     }

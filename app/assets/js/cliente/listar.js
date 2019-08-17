@@ -10,38 +10,52 @@ const gerarTabelaHtmlClientes = data => {
 
     if(data.length > 0){
         html += `
-        <table class="table">
+        <div class="table-responsive">
+        <table class="table table-hover">
             <thead>
                 <tr>
-                    <th>Nome</th>
-                    <th>CPF</th>
-                    <th>RG</th>
-                    <th>Telefone</th>
-                    <th>Data de nasc.</th>
-                    <th>Data cadastrado</th>
-                    <th>Endereços</th>
-                    <th>Opções</th>
+                    <th style="background: #ecf0f1">Nome</th>
+                    <th style="background: #ecf0f1">CPF</th>
+                    <th style="background: #ecf0f1">RG</th>
+                    <th style="background: #ecf0f1">Telefone</th>
+                    <th style="background: #ecf0f1">Data nasc.</th>
+                    <th style="background: #ecf0f1">Data cadastrado</th>
+                    <th style="background: #ecf0f1">Endereços</th>
+                    <th style="background: #ecf0f1">Opções</th>
                 </tr>
             </thead>
             <tbody>
         `;
     
         for(let cliente of data){
+            const dataNascimentoFormatoBr = formatarDataSqlParaBr(cliente.data_nascimento);
+            const dataCadastroFormatoBr = formatarTimesTampSqlParaBr(cliente.data_cadastro);
+
             html += `
             <tr>
                 <th>${cliente.nome}</th>
                 <td>${cliente.cpf}</td>
                 <td>${cliente.rg}</td>
                 <td>${cliente.telefone}</td>
-                <th>${cliente.data_nascimento}</th>
-                <td>${cliente.data_cadastro}</td>
+                <th>${dataNascimentoFormatoBr}</th>
+                <td>${dataCadastroFormatoBr}</td>
                 <td>
-                    <a href="#" id="btn-visualizar-endereco" data-id="${cliente.id}">Visualizar</a>
-                    <a href="#" id="btn-adicionar-endereco" data-id="${cliente.id}">Adicionar</a>
+                    <a class="btn btn-primary btn-sm" href="#" id="btn-visualizar-endereco" data-id="${cliente.id}">
+                        <i class="fas fa-eye"></i>
+                    </a>
+                    <br>
+                    <a class="btn btn-success btn-sm mt-1" href="#" id="btn-adicionar-endereco" data-id="${cliente.id}">
+                        <i class="fas fa-plus-circle"></i>
+                    </a>
                 </td>
                 <td>
-                    <a href="#" id="btn-editar" data-id="${cliente.id}">Editar</a> <br>
-                    <a href="#" id="btn-excluir" data-id="${cliente.id}">Excluir</a>
+                    <a class="btn btn-primary btn-sm" href="#" id="btn-editar" data-id="${cliente.id}">
+                        <i class="fas fa-pencil-alt"></i>
+                    </a>
+                    <br>
+                    <a class="btn btn-danger btn-sm mt-1" href="#" id="btn-excluir" data-id="${cliente.id}">
+                        <i class="fas fa-trash"></i>
+                    </a>
                 </td>
             </tr>
             `;
@@ -49,7 +63,8 @@ const gerarTabelaHtmlClientes = data => {
         
         html += `  
             </tbody>
-        </table>`;
+        </table>
+        </div>`;
     }
     else{
         html = `<h4>Nenhum cliente cadastrado</h4>`;
@@ -67,7 +82,7 @@ const gerarHtmlListaDeEnderecosCliente = data => {
     if(data.length > 0){
         for(let dados of data){
             html += `
-            <div id="painel-enderecos" style="background: #ecf0f1 ; padding: 5px ; margin-top: 10px ; border-radius: 5px">
+            <div id="painel-enderecos" style="background: #ecf0f1 ; padding: 10px ; margin-top: 20px ; border-radius: 5px">
                 <div class="form-row">
                     <div class="col-12 col-md-12">
                         <label>CEP</label>
@@ -160,6 +175,34 @@ const buscarDados = async function(){
         $listaClientes.innerHTML = '';
     }
 }
+
+
+document.querySelector("#editar-cpf").onkeypress = validarNumero;
+document.querySelector("#editar-rg").onkeypress = validarNumero;
+document.querySelector("#editar-telefone").onkeypress = validarNumero;
+
+/**
+ * Sempre que o foco sair do CEP
+ */
+document.querySelector("#painel-adicionar-cep").addEventListener("change", async function(){
+    // Consome a API do via cep para completar o endereço.
+    const cep = this.value;
+
+    try {
+        const resultado = await buscarEnderecoPorCep(cep);
+        if(resultado !== false){
+            const {bairro, localidade, logradouro, uf} = resultado;
+            const $modalAdicionarEndereco = document.querySelector("#modal-adicionar-endereco");
+            
+            $modalAdicionarEndereco.querySelector("#painel-adicionar-bairro").value = bairro;
+            $modalAdicionarEndereco.querySelector("#painel-adicionar-cidade").value = localidade;
+            $modalAdicionarEndereco.querySelector("#painel-adicionar-rua").value = logradouro;
+            $modalAdicionarEndereco.querySelector("#painel-adicionar-uf").value = uf;
+        }
+    } catch (e){
+        console.log('Error: ', e);
+    }
+})
 
 /**
  * Quando é clicado para editar as info de um cliente
@@ -302,12 +345,12 @@ document.querySelector("#lista-clientes").addEventListener("click", function(e){
                     
                     if(data.status == 'sucesso'){
                         Swal.fire(
-                            'Deleted!',
+                            'Excluído',
                             'Registro excluído com sucesso, aguarde... estamos atualizando',
                             'success'
                         );
 
-                        setTimeout(() => location.reload(), 2100);
+                        setTimeout(() => location.reload(), 2500);
                     }
                     else{
                         Swal.fire({

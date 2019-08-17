@@ -46,3 +46,32 @@ const buscarEnderecoPorCep = async function(cep){
         return false;
     }
 }
+
+/**
+ * Permite ser inserido apenas numeros no input.
+ */
+const validarNumero = function(e) {
+    let chr = String.fromCharCode(e.which);
+    if ("1234567890".indexOf(chr) < 0)
+        return false;
+}
+
+/**
+ * Formata uma data do padrão sql (YYYY-mm-dd) para o padrão BR (dd/mm/YYYY)
+ */
+const formatarDataSqlParaBr = data => {
+    const parteData = data.split('-');
+    return `${parteData[2]}/${parteData[1]}/${parteData[0]}`;
+}
+
+/**
+ * Formata uma data do padrão sql timestamp (YYYY-mm-dd HH:ss:mm) para o padrão BR (dd/mm/YYYY HH:ss:mm)
+ */
+const formatarTimesTampSqlParaBr = data => {
+    const parteTimestamp = data.split(' ');
+    const parteData = parteTimestamp[0];
+    const horario = parteTimestamp[1];
+    const dataFormatada = formatarDataSqlParaBr(parteData);
+
+    return `${dataFormatada} ${horario}`;
+}

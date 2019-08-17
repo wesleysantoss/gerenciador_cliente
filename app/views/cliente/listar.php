@@ -1,35 +1,69 @@
 <div class="container">
-    <div class="row">
-        <div class="col-12 col-md-12">
-            <h4>Listar Clientes</h4>
+    <div class="row d-flex justify-content-center mt-5">
+      <div class="col-12 col-md-10 painel">
+        <div class="painel-titulo">
+            <h2>
+            <i class="fas fa-users"></i> Listar clientes
+            </h2>
+            <p>
+            <i class="fas fa-info"></i> Veja abaixo todos os clientes cadastrado
+            </p>
         </div>
-
-        <div class="col-12 col-md-12">
-            <div id="lista-clientes"></div>
-        </div>
+      
+        <div id="lista-clientes"></div>
+      </div>
     </div>
 </div>
 
-<div class="modal fade" id="modal-editar-cliente" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="modal-editar-cliente" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"> 
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Editar dados</h5>
+        <h5 class="modal-title titulo-principal">Editar dados</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body" id="painel-editar-dados">
         <input type="hidden" id="editar-id">
-        <input type="text" id="editar-nome" class="form-control" required>
-        <input type="text" id="editar-cpf" class="form-control" required>
-        <input type="text" id="editar-rg" class="form-control" required>
-        <input type="text" id="editar-telefone" class="form-control" required>
-        <input type="date" id="editar-data-nascimento" class="form-control" required>
+        <div class="form-row">
+          <div class="col-12 col-md-12">
+            <label><b>*</b> Nome</label>
+            <input type="text" id="editar-nome" class="form-control" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="col-12 col-md-12">
+            <label><b>*</b> CPF</label>
+            <input type="text" id="editar-cpf" class="form-control" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="col-12 col-md-12">
+            <label><b>*</b> RG</label>
+            <input type="text" id="editar-rg" class="form-control" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="col-12 col-md-12">
+            <label><b>*</b> Telefone</label>
+            <input type="text" id="editar-telefone" class="form-control" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="col-12 col-md-12">
+            <label><b>*</b> Data de nascimento</label>
+            <input type="date" id="editar-data-nascimento" class="form-control" required>
+          </div>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-        <button type="button" class="btn btn-primary" id="btn-salvar-editar-dados">Salvar</button>
+        <button type="button" class="btn btn-success" id="btn-salvar-editar-dados">Salvar</button>
       </div>
     </div>
   </div>
@@ -39,7 +73,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Endereços</h5>
+        <h5 class="modal-title titulo-principal">Adicionar novo endereço</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -99,7 +133,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-        <button type="button" class="btn btn-primary" id="btn-adicionar-endereco">Salvar</button>
+        <button type="button" class="btn btn-success" id="btn-adicionar-endereco">Salvar</button>
       </div>
     </div>
   </div>
@@ -109,7 +143,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Endereços</h5>
+        <h5 class="modal-title titulo-principal" id="exampleModalLabel">Endereços</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -119,7 +153,6 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-        <button type="button" class="btn btn-primary" id="btn-salvar-editar-dados">Salvar</button>
       </div>
     </div>
   </div>

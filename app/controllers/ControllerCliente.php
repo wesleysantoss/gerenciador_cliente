@@ -3,6 +3,7 @@
 namespace App\controllers;
 use App\models\Cliente;
 use App\models\EnderecoCliente;
+use App\config\ConnectionDB;
 
 class ControllerCliente extends Controller {
     public function __construct()
@@ -60,25 +61,33 @@ class ControllerCliente extends Controller {
 
 		$idCliente = Cliente::criar($nome, $cpf, $rg, $telefone, $dataNascimento);
  
-		$totalEndereco = count($_POST['rua']);
+		if($idCliente > 0 && $idCliente != null){
+			$totalEndereco = count($_POST['rua']);
 
-		for($i = 0; $i <= $totalEndereco - 1; $i++){
-			$cep = $_POST['cep'][$i];
-			$rua = $_POST['rua'][$i];
-			$numero = $_POST['numero'][$i];
-			$bairro = $_POST['bairro'][$i];
-			$cidade = $_POST['rua'][$i];
-			$uf = $_POST['uf'][$i];
-			$complemento = $_POST['complemento'][$i];
-			$enderecoPrincipal = $_POST['principal'][$i];
+			for($i = 0; $i <= $totalEndereco - 1; $i++){
+				$cep = $_POST['cep'][$i];
+				$rua = $_POST['rua'][$i];
+				$numero = $_POST['numero'][$i];
+				$bairro = $_POST['bairro'][$i];
+				$cidade = $_POST['rua'][$i];
+				$uf = $_POST['uf'][$i];
+				$complemento = $_POST['complemento'][$i];
+				$enderecoPrincipal = $_POST['principal'][$i];
+	
+				EnderecoCliente::criar($idCliente, $cep, $rua, $numero, $bairro, $cidade, $uf, $complemento, $enderecoPrincipal);
+			}
 
-			EnderecoCliente::criar($idCliente, $cep, $rua, $numero, $bairro, $cidade, $uf, $complemento, $enderecoPrincipal);
+			echo json_encode(array(
+				"status" => "sucesso",
+				"mensagem" => "Cadastro realizado com sucesso"
+			));
 		}
-
-		echo json_encode(array(
-			"status" => "sucesso",
-			"mensagem" => "Cadastro realizado com sucesso"
-		));
+		else{
+			echo json_encode(array(
+				"status" => "sucesso",
+				"mensagem" => "Ocorreu algum erro ao cadastrar o cliente"
+			));
+		}
 	}
 
 	/**

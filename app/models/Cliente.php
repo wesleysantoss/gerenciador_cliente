@@ -58,7 +58,7 @@ class Cliente {
      * @return Bool
      */
     public static function criar($nome, $cpf, $rg, $telefone, $dataNascimento)
-    {
+    { 
         $pdo = ConnectionDB::getConnection();
 
         $stmt = $pdo->prepare("INSERT INTO clientes (nome, cpf, rg, telefone, data_nascimento) VALUES (:nome, :cpf, :rg, :telefone, :data_nascimento)");
