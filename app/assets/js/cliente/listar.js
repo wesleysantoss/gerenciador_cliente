@@ -422,7 +422,7 @@ document.querySelector("#btn-adicionar-endereco").addEventListener("click", asyn
         try {
             const {data} = await axios({
                 method: 'post',
-                url: '/gerenciador-cliente/cliente/endereco/adicionar',
+                url: '/gerenciador-cliente/endereco/adicionar',
                 data: dados,
                 responseType: 'json'
             });
@@ -477,7 +477,7 @@ document.querySelector("#lista-clientes").addEventListener("click", async functi
         try {
             const {data} = await axios({
                 method: 'post',
-                url: '/gerenciador-cliente/cliente/endereco/listar',
+                url: '/gerenciador-cliente/endereco/listar',
                 data: dados,
                 responseType: 'json'
             });
@@ -537,7 +537,7 @@ document.querySelector("#modal-listar-endereco").addEventListener("click", async
             try {
                 const {data} = await axios({
                     method: 'post',
-                    url: '/gerenciador-cliente/cliente/endereco/editar',
+                    url: '/gerenciador-cliente/endereco/editar',
                     data: dados,
                     responseType: 'json'
                 });
@@ -591,7 +591,7 @@ document.querySelector("#modal-listar-endereco").addEventListener("click", async
                 try {
                     const {data} = await axios({
                         method: 'post',
-                        url: '/gerenciador-cliente/cliente/endereco/excluir',
+                        url: '/gerenciador-cliente/endereco/excluir',
                         data: dados,
                         responseType: 'json'
                     });

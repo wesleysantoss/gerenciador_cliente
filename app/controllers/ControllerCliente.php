@@ -3,7 +3,6 @@
 namespace App\controllers;
 use App\models\Cliente;
 use App\models\EnderecoCliente;
-use App\config\ConnectionDB;
 
 class ControllerCliente extends Controller {
     public function __construct()
@@ -59,12 +58,16 @@ class ControllerCliente extends Controller {
 		$telefone = $_POST['telefone'];
 		$dataNascimento = $_POST['dataNascimento'];
 
+		// Função retorna o ID do cliente que foi criado.
 		$idCliente = Cliente::criar($nome, $cpf, $rg, $telefone, $dataNascimento);
  
 		if($idCliente > 0 && $idCliente != null){
+			// Identifica o total de endereços que existe no array.
 			$totalEndereco = count($_POST['rua']);
 
+			$statusEndereco = true;
 			for($i = 0; $i <= $totalEndereco - 1; $i++){
+				// Percorre todos os endereços.
 				$cep = $_POST['cep'][$i];
 				$rua = $_POST['rua'][$i];
 				$numero = $_POST['numero'][$i];
@@ -74,12 +77,22 @@ class ControllerCliente extends Controller {
 				$complemento = $_POST['complemento'][$i];
 				$enderecoPrincipal = $_POST['principal'][$i];
 	
-				EnderecoCliente::criar($idCliente, $cep, $rua, $numero, $bairro, $cidade, $uf, $complemento, $enderecoPrincipal);
+				$retornoEndereco = EnderecoCliente::criar($idCliente, $cep, $rua, $numero, $bairro, $cidade, $uf, $complemento, $enderecoPrincipal);
+
+				if(!$retornoEndereco){
+					// Tratamento para identificar se algum endereço falhou na criação.
+					$statusEndereco = false;
+				}
+			}
+
+			$mensagem = "";
+			if(!$statusEndereco){
+				$mensagem = ", mas ocorreu falha na criação de um dos endereços.";
 			}
 
 			echo json_encode(array(
 				"status" => "sucesso",
-				"mensagem" => "Cadastro realizado com sucesso"
+				"mensagem" => "Cadastro realizado com sucesso {$mensagem}"
 			));
 		}
 		else{
@@ -91,7 +104,7 @@ class ControllerCliente extends Controller {
 	}
 
 	/**
-	 * Busca todos os clientes que existe na base
+	 * Busca todos os clientes que existem na base.
 	 */
 	public function listarTodos()
 	{
@@ -100,7 +113,7 @@ class ControllerCliente extends Controller {
 	}
 
 	/**
-	 * Lista um cliente especifico
+	 * Busca um cliente especifico pelo seu ID.
 	 */
 	public function listar()
 	{
@@ -144,97 +157,6 @@ class ControllerCliente extends Controller {
 		$id = $_POST['id'];
 
 		if(Cliente::excluir($id)){
-			echo json_encode(array(
-				"status" => "sucesso"
-			));
-		}
-		else{
-			echo json_encode(array(
-				"status" => "algo de errado"
-			));
-		}
-	}
-
-	/**
-	 * Busca todos os endereços de um cliente especifico.
-	 */
-	public function listarEndereco()
-	{
-		$id = $_POST['id'];
-
-		$Cliente = new Cliente($id);
-		$enderecos = $Cliente->buscarTodosEnderecos();
-
-		echo json_encode($enderecos);
-	}
-
-	/**
-	 * Edita as informações de um endereço especifico.
-	 */
-	public function editarEndereco()
-	{
-		$idEndereco = $_POST['idEndereco'];
-		$cep = $_POST['cep'];
-		$rua = $_POST['rua'];
-		$numero = $_POST['numero'];
-		$bairro = $_POST['bairro'];
-		$cidade = $_POST['cidade'];
-		$uf = $_POST['uf'];
-		$complemento = $_POST['complemento'];
-		$enderecoPrincipal = $_POST['enderecoPrincipal'];
-
-		$resultado = EnderecoCliente::editar($idEndereco, $cep, $rua, $numero, $bairro, $cidade, $uf, $complemento, $enderecoPrincipal);
-
-		if($resultado){
-			echo json_encode(array(
-				"status" => "sucesso"
-			));
-		}
-		else{
-			echo json_encode(array(
-				"status" => "erro",
-				"mensagem" => "Ocorreu algum erro"
-			));
-		}
-	}
-
-	/**
-	 * Exclui um endereço especifico.
-	 */
-	public function excluirEndereco()
-	{
-		$idEndereco = $_POST['idEndereco'];
-
-		if(EnderecoCliente::excluir($idEndereco)){
-			echo json_encode(array(
-				"status" => "sucesso"
-			));
-		}
-		else{
-			echo json_encode(array(
-				"status" => "algo de errado"
-			));
-		}
-	}
-
-	/**
-	 * Adiciona um novo endereço para um cliente especifico.
-	 */
-	public function adicionarEndereco()
-	{
-		$idCliente = $_POST['idCliente'];
-		$cep = $_POST['cep'];
-		$rua = $_POST['rua'];
-		$numero = $_POST['numero'];
-		$bairro = $_POST['bairro'];
-		$cidade = $_POST['cidade'];
-		$uf = $_POST['uf'];
-		$complemento = $_POST['complemento'];
-		$enderecoPrincipal = $_POST['enderecoPrincipal'];
-
-		$resultado = EnderecoCliente::criar($idCliente, $cep, $rua, $numero, $bairro, $cidade, $uf, $complemento, $enderecoPrincipal);
-
-		if($resultado){
 			echo json_encode(array(
 				"status" => "sucesso"
 			));

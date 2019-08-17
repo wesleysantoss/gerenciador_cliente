@@ -22,8 +22,9 @@ class Route
 		$RouteLogin = require_once(__DIR__ . "/routes/RouteLogin.php");
 		$RouteHome = require_once(__DIR__ . "/routes/RouteHome.php");
 		$RouteCliente = require_once(__DIR__ . "/routes/RouteCliente.php");
+		$RouteEndereco = require_once(__DIR__ . "/routes/RouteEndereco.php");
 
-		$array_routes = array_merge($RouteLogin, $RouteHome, $RouteCliente);
+		$array_routes = array_merge($RouteLogin, $RouteHome, $RouteCliente, $RouteEndereco);
 		$this->routes = $array_routes;
 	}
 
