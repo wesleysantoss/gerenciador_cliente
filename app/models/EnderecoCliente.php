@@ -1,7 +1,7 @@
 <?php 
 
 namespace App\models;
-use App\config\ConnectionDB;
+use App\helper\ConnectionDB;
 
 class EnderecoCliente {
     private $id;

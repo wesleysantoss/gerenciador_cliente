@@ -1,7 +1,7 @@
 <?php 
 
 namespace App\models;
-use App\config\ConnectionDB;
+use App\helper\ConnectionDB;
 use App\models\EnderecoCliente;
 
 class Cliente {
