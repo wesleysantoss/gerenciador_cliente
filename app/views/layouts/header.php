@@ -8,9 +8,9 @@
         <?php echo $title ?>
     </title>
 
-    <link href="<?php echo PATH_URL ?>/assets/css/libs/bootstrap/bootstrap.min.css?v=<?php echo filemtime(PATH . '/assets/css/libs/bootstrap/bootstrap.min.css') ?>" rel="stylesheet">
+    <link href="<?php echo PATH_URL ?>/assets/css/libs/bootstrap/bootstrap.min.css?v=<?php echo filemtime('app/assets/css/libs/bootstrap/bootstrap.min.css') ?>" rel="stylesheet">
 
-    <link href="<?php echo PATH_URL ?>/assets/css/global.css?v=<?php echo filemtime(PATH . '/assets/css/global.css') ?>" rel="stylesheet">
+    <link href="<?php echo PATH_URL ?>/assets/css/global.css?v=<?php echo filemtime('app/assets/css/global.css') ?>" rel="stylesheet">
 
     <script src="https://kit.fontawesome.com/1dbdce141d.js"></script>
 
@@ -19,7 +19,7 @@
             foreach($css as $row){
                 if(file_exists('app/assets/css/' . $row)){
                     $path = PATH_URL . '/assets/css/' . $row;
-                    $version = filemtime(PATH . '/assets/css/' . $row);
+                    $version = filemtime('app/assets/css/' . $row);
                     echo '<link href="'.$path.'?v='.$version.'" rel="stylesheet">';
                 }
             }

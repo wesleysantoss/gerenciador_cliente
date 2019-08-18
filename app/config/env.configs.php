@@ -3,8 +3,8 @@
  * Server path
  */
 
-define('PATH_URL', 	'http://127.0.0.1/gerenciador-cliente/app');
-define('PATH'    , 	'app');
+define('PATH_URL', 'http://127.0.0.1/gerenciador-cliente/app');
+define('PATH', '/gerenciador-cliente');
 
 /**
  * DB
