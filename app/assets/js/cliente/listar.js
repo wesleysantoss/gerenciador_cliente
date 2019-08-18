@@ -41,20 +41,20 @@ const gerarTabelaHtmlClientes = data => {
                 <td>${dataCadastroFormatoBr}</td>
                 <td>
                     <a class="btn btn-primary btn-sm" href="#" id="btn-visualizar-endereco" data-id="${cliente.id}">
-                        <i class="fas fa-eye"></i>
+                        <i class="fas fa-eye"></i> Visualizar
                     </a>
                     <br>
                     <a class="btn btn-success btn-sm mt-1" href="#" id="btn-adicionar-endereco" data-id="${cliente.id}">
-                        <i class="fas fa-plus-circle"></i>
+                        <i class="fas fa-plus-circle"></i> Adicionar
                     </a>
                 </td>
                 <td>
                     <a class="btn btn-primary btn-sm" href="#" id="btn-editar" data-id="${cliente.id}">
-                        <i class="fas fa-pencil-alt"></i>
+                        <i class="fas fa-pencil-alt"></i> Editar
                     </a>
                     <br>
                     <a class="btn btn-danger btn-sm mt-1" href="#" id="btn-excluir" data-id="${cliente.id}">
-                        <i class="fas fa-trash"></i>
+                        <i class="fas fa-trash"></i> Excluir
                     </a>
                 </td>
             </tr>
@@ -477,7 +477,7 @@ document.querySelector("#lista-clientes").addEventListener("click", async functi
         try {
             const {data} = await axios({
                 method: 'post',
-                url: '/gerenciador-cliente/endereco/listar',
+                url: '/gerenciador-cliente/cliente/endereco/listar',
                 data: dados,
                 responseType: 'json'
             });

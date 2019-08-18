@@ -49,12 +49,12 @@ class Cliente {
     }
 
     /**
-     * Cadastra um novo cliente
-     * @param $nome - Nome
-     * @param $cpf - CPF
-     * @param $rg - RG
-     * @param $telefone - Telefone
-     * @param $dataNascimento - Data de nascimento
+     * Cadastra um novo cliente.
+     * @param $nome - Nome.
+     * @param $cpf - CPF.
+     * @param $rg - RG.
+     * @param $telefone - Telefone.
+     * @param $dataNascimento - Data de nascimento.
      * @return Bool
      */
     public static function criar($nome, $cpf, $rg, $telefone, $dataNascimento)
@@ -73,7 +73,7 @@ class Cliente {
     }
 
     /**
-     * Busca todos os clientes que existe
+     * Busca todos os clientes que existe.
      */
     public static function buscarTodos()
     {
@@ -85,8 +85,8 @@ class Cliente {
     }
 
     /**
-     * Exclui um cliente especifico
-     * @param $id - ID do cliente a ser excluido
+     * Exclui um cliente especifico.
+     * @param $id - ID do cliente a ser excluido.
      * @return Bool
      */
     public static function excluir($id)

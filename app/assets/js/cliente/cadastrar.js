@@ -218,6 +218,7 @@ document.querySelector("#btn-cadastrar").addEventListener("click", async functio
                     });
                 }
             } catch(e) {
+                console.log('Error: ', e);
                 Swal.fire({
                     type: 'danger',
                     title: 'Oops...',

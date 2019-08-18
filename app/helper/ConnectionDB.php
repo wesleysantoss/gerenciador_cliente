@@ -19,7 +19,7 @@ class ConnectionDB
                     DB_DRIVER .":host=".DB_HOST."; dbname=".DB_DATABASE.";charset=utf8", 
                     DB_LOGIN, DB_PASSWORD
                 );
-            } catch (PDOException  $e){
+            } catch (\PDOException  $e){
                 echo $e->getMessage();
             }
         }

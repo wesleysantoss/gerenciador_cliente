@@ -39,7 +39,7 @@ class EnderecoCliente {
             $this->dataCadastro = $row['data_cadastro'];
         }
         else{
-            throw new Exception("Nenhum endereço com o id {$id}");
+            throw new \Exception("Nenhum endereço com o id {$id}");
         }
     }
 
@@ -101,20 +101,6 @@ class EnderecoCliente {
         $stmt->bindValue(':id_cliente', $idCliente);
         $stmt->execute();
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
-    }
-
-    /**
-     * Busca o endereço principal de um cliente especifico
-     * @return Array
-     */
-    public static function buscarPorPrincipalCliente($idCliente)
-    {
-        $pdo = ConnectionDB::getConnection();
-
-        $stmt = $pdo->prepare("SELECT id, rua, numero, bairro, cidade, estado, complemento, endereco_principal, data_cadastro FROM endereco_cliente WHERE id_cliente = :id_cliente AND endereco_principal = 'S'");
-        $stmt->bindValue(':id_cliente', $idCliente);
-        $stmt->execute();
-        return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
     /**

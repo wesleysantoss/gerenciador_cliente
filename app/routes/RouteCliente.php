@@ -35,4 +35,9 @@ $array_routes['/gerenciador-cliente/cliente/excluir'] = array( // Rota
     "action"     => "excluir"                                  // Função 
 );
 
+$array_routes['/gerenciador-cliente/cliente/endereco/listar'] = array( // Rota
+    "controller" => "App\controllers\ControllerCliente",      // Controller 
+    "action"     => "listarEndereco"                           // Função 
+);
+
 return $array_routes;

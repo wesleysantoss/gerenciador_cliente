@@ -50,18 +50,47 @@ class ControllerCliente extends Controller {
 	}
 
 	/**
-	 * Cadastra um novo cliente
+	 * Define as regras do microframework Respect/Validator
+	 * https://respect-validation.readthedocs.io/en/latest/
+	 */
+	private function buscarValidatorDadosCliente()
+	{
+		$validatorDadosCliente = v::ArrayVal()
+			->key('nome', v::notEmpty())                                    
+			->key('cpf', v::notEmpty()->noWhitespace()->cpf())                                  
+			->key('rg', v::notEmpty()->noWhitespace()->length(9,10)) 
+			->key('telefone', v::notEmpty()->noWhitespace()->intVal())          
+			->key('dataNascimento', v::notEmpty()->noWhitespace()->date());
+				
+		return $validatorDadosCliente;
+	}
+
+	/**
+	 * Define as mensagens de erros do microframework Respect/Validator
+	 * https://respect-validation.readthedocs.io/en/latest/feature-guide/#custom-messages
+	 */
+	private function buscarMensagensValidator()
+	{
+		return [
+			'length' => '{{name}} não corresponde ao tamanho exigido',
+			'cpf' => '{{name}} não é um CPF valido',
+			'noWhitespace' => '{{name}} não pode conter espaços', 
+			'notEmpty' => '{{name}} não pode ser vázio',
+			'intVal' => '{{name}} não é um valor válido',
+			'date' => '{{name}} não é uma data valida',
+		];
+	}
+
+	/**
+	 * Cadastra um novo cliente.
 	 */
 	public function cadastrar()
 	{
-		$validatorDeCPF = v::cpf();
-		$validatorDeRG = v::alnum()->noWhitespace()->length(9, 10);
-		$validatorTelefone = v::numeric()->noWhitespace()->length(11, 12);
-
-		try {
-			$validatorDeCPF->assert($_POST['cpf']);
-			$validatorDeRG->assert($_POST['rg']);
-			$validatorTelefone->assert($_POST['telefone']);
+		// Busca as regras de validação para validar os dados que veio no POST.
+		$validatorDadosCliente = $this->buscarValidatorDadosCliente();          
+				 
+		try { 
+			$validatorDadosCliente->assert($_POST);
 
 			$nome = $_POST['nome'];
 			$cpf = $_POST['cpf'];
@@ -113,18 +142,15 @@ class ControllerCliente extends Controller {
 				));
 			}
 		}catch (NestedValidationException $e){
-			$e->findMessages([
-				'length' => '{{name}} não corresponde ao tamanho exigido',
-				'cpf' => '{{name}} não é um CPF valido',
-				'noWhitespace' => '{{name}} não pode conter espaços'
-			]);
+			// Busca as mensagens de erros para a validação.
+			$mensagens = $this->buscarMensagensValidator();
+			$e->findMessages($mensagens);
 
 			echo json_encode(array(
 				"status" => "erro",
 				"mensagem" => $e->getFullMessage()
 			));
 		}
-		
 	}
 
 	/**
@@ -141,9 +167,16 @@ class ControllerCliente extends Controller {
 	 */
 	public function listar()
 	{
-		$id = $_POST['id'];
-		$Cliente = new Cliente($id);
-		echo json_encode($Cliente);
+		try {
+			$id = $_POST['id'];
+			$Cliente = new Cliente($id);
+			echo json_encode($Cliente);
+		} catch (\Exception $e){
+			echo json_encode(array(
+				"status" => "erro",
+				"mensagem" => $e->getMessage()
+			));
+		}
 	}
 
 	/**
@@ -151,14 +184,11 @@ class ControllerCliente extends Controller {
 	 */
 	public function atualizar()
 	{
-		$validatorDeCPF = v::cpf();
-		$validatorDeRG = v::alnum()->noWhitespace()->length(9, 10);
-		$validatorTelefone = v::numeric()->noWhitespace()->length(11, 12);
+		// Busca as regras de validação para validar os dados que veio no POST.
+		$validatorDadosCliente = $this->buscarValidatorDadosCliente(); 
 
 		try {
-			$validatorDeCPF->assert($_POST['cpf']);
-			$validatorDeRG->assert($_POST['rg']);
-			$validatorTelefone->assert($_POST['telefone']);
+			$validatorDadosCliente->assert($_POST);
 			
 			$id = $_POST['id'];
 			$Cliente = new Cliente($id);
@@ -171,20 +201,20 @@ class ControllerCliente extends Controller {
 	
 			if($Cliente->atualizar()){
 				echo json_encode(array(
-					"status" => "sucesso"
+					"status" => "sucesso",
+					"mensagem" => "Dados atualizado com suceso"
 				));
 			}
 			else{
 				echo json_encode(array(
-					"status" => "algo de errado"
+					"status" => "erro",
+					"mensagem" => "Oops... Ocorreu algum erro."
 				));
 			}
 		} catch (NestedValidationException $e){
-			$e->findMessages([
-				'length' => '{{name}} não corresponde ao tamanho exigido',
-				'cpf' => '{{name}} não é um CPF valido',
-				'noWhitespace' => '{{name}} não pode conter espaços'
-			]);
+			// Busca as mensagens de erros para a validação.
+			$mensagens = $this->buscarMensagensValidator();
+			$e->findMessages($mensagens);
 
 			echo json_encode(array(
 				"status" => "erro",
@@ -202,13 +232,28 @@ class ControllerCliente extends Controller {
 
 		if(Cliente::excluir($id)){
 			echo json_encode(array(
-				"status" => "sucesso"
+				"status" => "sucesso",
+				"mensagem" => "Cliente excluído com sucesso"
 			));
 		}
 		else{
 			echo json_encode(array(
-				"status" => "algo de errado"
+				"status" => "erro",
+				"mensagem" => "Oops... Ocorreu algum erro."
 			));
 		}
 	}
+
+	/**
+	 * Busca todos os endereços de um cliente especifico.
+	 */
+	public function listarEndereco()
+	{
+		$id = $_POST['id'];
+
+		$Cliente = new Cliente($id);
+		$enderecos = $Cliente->buscarTodosEnderecos();
+
+		echo json_encode($enderecos);
+    }
 }

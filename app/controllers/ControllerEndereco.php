@@ -1,8 +1,9 @@
 <?php 
 
 namespace App\controllers;
-use App\models\Cliente;
 use App\models\EnderecoCliente;
+use Respect\Validation\Validator as v;
+use Respect\Validation\Exceptions\NestedValidationException;
 
 class ControllerEndereco extends Controller {
     public function __construct()
@@ -12,46 +13,81 @@ class ControllerEndereco extends Controller {
             header('location: /gerenciador-cliente/login');
         }        
     }
-
-    /**
-	 * Busca todos os endereços de um cliente especifico.
+	
+	/**
+	 * Define as regras do microframework Respect/Validator
+	 * https://respect-validation.readthedocs.io/en/latest/
 	 */
-	public function listarEndereco()
+	private function buscarValidatorDadosEndereco()
 	{
-		$id = $_POST['id'];
+		$validatorDadosEndereco = v::ArrayVal()
+			->key('cep', v::notEmpty()->intVal())                                  
+			->key('rua', v::notEmpty())                                  
+			->key('numero', v::notEmpty())
+			->key('bairro', v::notEmpty())          
+			->key('cidade', v::notEmpty())
+			->key('uf', v::notEmpty())
+			->key('complemento',  v::notEmpty())
+			->key('enderecoPrincipal',  v::notEmpty());
+				
+		return $validatorDadosEndereco;
+	}
 
-		$Cliente = new Cliente($id);
-		$enderecos = $Cliente->buscarTodosEnderecos();
+	/**
+	 * Define as mensagens de erros do microframework Respect/Validator
+	 * https://respect-validation.readthedocs.io/en/latest/feature-guide/#custom-messages
+	 */
+	private function buscarMensagensValidator()
+	{
+		return [
+			'notEmpty' => '{{name}} não pode ser vázio',
+			'intVal' => '{{name}} não é um valor válido',
+		];
+	}
 
-		echo json_encode($enderecos);
-    }
-    
     /**
 	 * Edita as informações de um endereço especifico.
 	 */
 	public function editarEndereco()
 	{
-		$idEndereco = $_POST['idEndereco'];
-		$cep = $_POST['cep'];
-		$rua = $_POST['rua'];
-		$numero = $_POST['numero'];
-		$bairro = $_POST['bairro'];
-		$cidade = $_POST['cidade'];
-		$uf = $_POST['uf'];
-		$complemento = $_POST['complemento'];
-		$enderecoPrincipal = $_POST['enderecoPrincipal'];
+		// Busca as regras de validação para validar os dados que veio no POST.
+		$validatorDadosEndereco = $this->buscarValidatorDadosEndereco();   
 
-		$resultado = EnderecoCliente::editar($idEndereco, $cep, $rua, $numero, $bairro, $cidade, $uf, $complemento, $enderecoPrincipal);
+		try {
+			$validatorDadosEndereco->assert($_POST);
 
-		if($resultado){
-			echo json_encode(array(
-				"status" => "sucesso"
-			));
-		}
-		else{
+			$idEndereco = $_POST['idEndereco'];
+			$cep = $_POST['cep'];
+			$rua = $_POST['rua'];
+			$numero = $_POST['numero'];
+			$bairro = $_POST['bairro'];
+			$cidade = $_POST['cidade'];
+			$uf = $_POST['uf'];
+			$complemento = $_POST['complemento'];
+			$enderecoPrincipal = $_POST['enderecoPrincipal'];
+	
+			$resultado = EnderecoCliente::editar($idEndereco, $cep, $rua, $numero, $bairro, $cidade, $uf, $complemento, $enderecoPrincipal);
+	
+			if($resultado){
+				echo json_encode(array(
+					"status" => "sucesso",
+					"mensagem" => "Endereço editado com sucesso"
+				));
+			}
+			else{
+				echo json_encode(array(
+					"status" => "erro",
+					"mensagem" => "Oops... Ocorreu algum erro"
+				));
+			}
+		} catch (NestedValidationException $e){
+			// Busca as mensagens de erros para a validação.
+			$mensagens = $this->buscarMensagensValidator();
+			$e->findMessages($mensagens);
+
 			echo json_encode(array(
 				"status" => "erro",
-				"mensagem" => "Ocorreu algum erro"
+				"mensagem" => $e->getFullMessage()
 			));
 		}
     }
@@ -65,12 +101,14 @@ class ControllerEndereco extends Controller {
 
 		if(EnderecoCliente::excluir($idEndereco)){
 			echo json_encode(array(
-				"status" => "sucesso"
+				"status" => "sucesso",
+				"mensagem" => "Endereço excluído com sucesso"
 			));
 		}
 		else{
 			echo json_encode(array(
-				"status" => "algo de errado"
+				"status" => "erro",
+				"mensagem" => "Oops... Ocorreu algum erro."
 			));
 		}
     }
@@ -80,26 +118,44 @@ class ControllerEndereco extends Controller {
 	 */
 	public function adicionarEndereco()
 	{
-		$idCliente = $_POST['idCliente'];
-		$cep = $_POST['cep'];
-		$rua = $_POST['rua'];
-		$numero = $_POST['numero'];
-		$bairro = $_POST['bairro'];
-		$cidade = $_POST['cidade'];
-		$uf = $_POST['uf'];
-		$complemento = $_POST['complemento'];
-		$enderecoPrincipal = $_POST['enderecoPrincipal'];
+		// Busca as regras de validação para validar os dados que veio no POST.
+		$validatorDadosEndereco = $this->buscarValidatorDadosEndereco();   
 
-		$resultado = EnderecoCliente::criar($idCliente, $cep, $rua, $numero, $bairro, $cidade, $uf, $complemento, $enderecoPrincipal);
+		try {
+			$validatorDadosEndereco->assert($_POST);
 
-		if($resultado){
+			$idCliente = $_POST['idCliente'];
+			$cep = $_POST['cep'];
+			$rua = $_POST['rua'];
+			$numero = $_POST['numero'];
+			$bairro = $_POST['bairro'];
+			$cidade = $_POST['cidade'];
+			$uf = $_POST['uf'];
+			$complemento = $_POST['complemento'];
+			$enderecoPrincipal = $_POST['enderecoPrincipal'];
+
+			$resultado = EnderecoCliente::criar($idCliente, $cep, $rua, $numero, $bairro, $cidade, $uf, $complemento, $enderecoPrincipal);
+
+			if($resultado){
+				echo json_encode(array(
+					"status" => "sucesso",
+					"mensagem" => "Endereço adicionado com sucesso"
+				));
+			}
+			else{
+				echo json_encode(array(
+					"status" => "erro",
+					"mensagem" => "Oops... Ocorreu algum erro."
+				));
+			}
+		} catch (NestedValidationException $e){
+			// Busca as mensagens de erros para a validação.
+			$mensagens = $this->buscarMensagensValidator();
+			$e->findMessages($mensagens);
+
 			echo json_encode(array(
-				"status" => "sucesso"
-			));
-		}
-		else{
-			echo json_encode(array(
-				"status" => "algo de errado"
+				"status" => "erro",
+				"mensagem" => $e->getFullMessage()
 			));
 		}
 	}
