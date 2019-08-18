@@ -79,7 +79,7 @@ class Cliente {
     {
         $pdo = ConnectionDB::getConnection();
         
-        $stmt = $pdo->prepare("SELECT id, nome, cpf, rg, telefone, data_nascimento, data_cadastro FROM clientes");
+        $stmt = $pdo->prepare("SELECT id, nome, cpf, rg, telefone, data_nascimento, data_cadastro FROM clientes ORDER BY data_cadastro DESC");
         $stmt->execute();
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }

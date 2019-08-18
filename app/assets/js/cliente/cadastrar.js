@@ -214,7 +214,7 @@ document.querySelector("#btn-cadastrar").addEventListener("click", async functio
                     Swal.fire({
                         type: 'danger',
                         title: 'Oops...',
-                        text: 'Ocorreu algum erro, tente novamente mais tarde.',
+                        text: data.mensagem,
                     });
                 }
             } catch(e) {

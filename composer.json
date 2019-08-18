@@ -12,5 +12,7 @@
         "classmap": ["app/Route.php"],
         "psr-4": {"App\\": "app/"}
     },
-    "require": {}
+    "require": {
+        "respect/validation": "^1.1"
+    }
 }
