@@ -38,7 +38,7 @@ const gerarHtmlPainelEndereco = function(){
                 </p>
 
                 <button id="btn-excluir-endereco" type="button" class="btn btn-danger btn-sm">
-                    <i class="fas fa-trash"></i>
+                    <i class="fas fa-trash"></i> Excluir
                 </button>
             </div>
         </div>
