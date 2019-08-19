@@ -25,6 +25,11 @@ $array_routes[PATH . '/cliente/listar'] = array( // Rota
     "action"     => "listar"                                  // Função 
 );
 
+$array_routes[PATH . '/cliente/listarPorCPF'] = array(    // Rota
+    "controller" => "App\controllers\ControllerCliente",  // Controller 
+    "action"     => "listarPorCPF"                        // Função 
+);
+
 $array_routes[PATH . '/cliente/atualizar'] = array( // Rota
     "controller" => "App\controllers\ControllerCliente",         // Controller 
     "action"     => "atualizar"                                  // Função 

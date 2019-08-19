@@ -7,8 +7,10 @@ use Respect\Validation\Validator as v;
 use Respect\Validation\Exceptions\NestedValidationException;
 
 class ControllerCliente extends Controller {
-    public function __construct()
+    private function validarLogin()
     {
+		// Função middleware para validar o login.
+
         if(!isset($_SESSION['usuario'])){
 			// Caso o usuário não esteja logado ele é direcionado para a tela de login.
             header('location: /gerenciador-cliente/login');
@@ -20,6 +22,8 @@ class ControllerCliente extends Controller {
 	 */
     public function index()
 	{
+		$this->validarLogin();
+
 		// Array utilizado em layouts/header.php
 		$array_css = [];    
 		
@@ -36,6 +40,8 @@ class ControllerCliente extends Controller {
     
     public function pageListar()
 	{
+		$this->validarLogin();
+
 		// Array utilizado em layouts/header.php
 		$array_css = [];    
 		
@@ -112,7 +118,7 @@ class ControllerCliente extends Controller {
 					$rua = $_POST['rua'][$i];
 					$numero = $_POST['numero'][$i];
 					$bairro = $_POST['bairro'][$i];
-					$cidade = $_POST['rua'][$i];
+					$cidade = $_POST['cidade'][$i];
 					$uf = $_POST['uf'][$i];
 					$complemento = $_POST['complemento'][$i];
 					$enderecoPrincipal = $_POST['principal'][$i];
@@ -242,6 +248,16 @@ class ControllerCliente extends Controller {
 				"mensagem" => "Oops... Ocorreu algum erro."
 			));
 		}
+	}
+
+	/**
+	 * Busca os dados de um cliente especifico pelo seu CPF.
+	 */
+	public function listarPorCPF()
+	{
+		$cpf = $_POST['cpf'];
+		$dadosCliente = Cliente::buscarPorCPF($cpf);
+		echo json_encode($dadosCliente);
 	}
 
 	/**

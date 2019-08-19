@@ -6,14 +6,6 @@ use Respect\Validation\Validator as v;
 use Respect\Validation\Exceptions\NestedValidationException;
 
 class ControllerEndereco extends Controller {
-    public function __construct()
-    {
-        if(!isset($_SESSION['usuario'])){
-			// Caso o usuário não esteja logado ele é direcionado para a tela de login.
-            header('location: /gerenciador-cliente/login');
-        }        
-    }
-	
 	/**
 	 * Define as regras do microframework Respect/Validator
 	 * https://respect-validation.readthedocs.io/en/latest/

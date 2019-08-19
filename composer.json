@@ -11,8 +11,15 @@
         "files": ["app/config/env.configs.php"],
         "classmap": ["app/Route.php"],
         "psr-4": {"App\\": "app/"}
+    },    
+    "scripts": {
+        "test": "vendor\\bin\\phpunit --colors tests"
     },
     "require": {
-        "respect/validation": "^1.1"
+        "respect/validation": "^1.1",
+        "guzzlehttp/guzzle": "~6.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "7"
     }
 }

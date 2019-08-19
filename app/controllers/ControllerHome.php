@@ -3,8 +3,10 @@
 namespace App\controllers;
 
 class ControllerHome extends Controller {
-    public function __construct()
+    private function validarLogin()
     {
+		// Função middleware para validar o login.
+		
         if(!isset($_SESSION['usuario'])){
 			// Caso o usuário não esteja logado ele é direcionado para a tela de login.
             header('location: /gerenciador-cliente/login');
@@ -16,6 +18,8 @@ class ControllerHome extends Controller {
 	 */
     public function index()
 	{
+		$this->validarLogin();
+
 		// Array utilizado em layouts/header.php
 		$array_css = [];    
 		

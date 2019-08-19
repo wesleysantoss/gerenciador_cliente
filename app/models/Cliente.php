@@ -85,6 +85,21 @@ class Cliente {
     }
 
     /**
+     * Busca os dados de um cliente especifico.
+     * @param $cpf - CPF do cliente a ser pesquisado.
+     * @return Array
+     */
+    public static function buscarPorCPF($cpf)
+    {
+        $pdo = ConnectionDB::getConnection();
+
+        $stmt = $pdo->prepare("SELECT id, nome, cpf, rg, telefone, data_nascimento, data_cadastro FROM clientes WHERE cpf = :cpf");
+        $stmt->bindValue(':cpf', $cpf);
+        $stmt->execute();
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
+    }
+
+    /**
      * Exclui um cliente especifico.
      * @param $id - ID do cliente a ser excluido.
      * @return Bool
